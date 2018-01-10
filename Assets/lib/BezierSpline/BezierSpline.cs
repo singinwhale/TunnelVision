@@ -33,6 +33,14 @@ namespace Assets.lib
             }
         }
 
+        public float Length
+        {
+            get
+            {
+                return _pointsList.Count - 1 - float.Epsilon;
+            }
+        }
+
         public Vector3 this[float u]
         {
             get
@@ -43,13 +51,24 @@ namespace Assets.lib
 
         public Vector3 Evaluate(float u)
         {
-            u = Mathf.Clamp(u, 0, _pointsList.Count - 1 - float.Epsilon);
+            u = Mathf.Clamp(u, 0, Length);
             
             _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
             
             return _curve[GetTForU(u)]; //[0,1] normalized value from u fraction
         }
-        
+
+        public Vector3 GetDerivative(float u, int order)
+        {
+            u = Mathf.Clamp(u, 0, Length);
+
+            _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
+
+            return _curve.GetDerivative(GetTForU(u),order); //[0,1] normalized value from u fraction
+        }
+
+
+
 
         public int GetCurveFirstPointIndexForU(float u)
         {
@@ -99,5 +118,6 @@ namespace Assets.lib
             _curve.Points = _pointsList.GetRange(firstPointIndex, CurveOrder);
             return _curve.GetNormal((u - firstPointIndex) / CurveOrder); //[0,1] normalized value from u fraction
         }
+
     }
 }

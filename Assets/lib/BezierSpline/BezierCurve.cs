@@ -34,20 +34,20 @@ namespace Assets.lib
 
         public Vector3 Evaluate(float t)
         {
-            return GetDerivation(t, 0);
+            return GetDerivative(t, 0);
         }
 
         public Vector3 GetTangent(float t)
         {
-            return GetDerivation(t, 1);
+            return GetDerivative(t, 1);
         }
 
         public Vector3 GetNormal(float t)
         {
-            return GetDerivation(t, 2);
+            return GetDerivative(t, 2);
         }
 
-        public Vector3 GetDerivation(float t, int order)
+        public Vector3 GetDerivative(float t, int order)
         {
             // make sure t is in range [0,1]
             Assert.IsFalse(t < 0.0f || 1.0f < t);
@@ -65,9 +65,10 @@ namespace Assets.lib
                 {
                     derivationFactor = 1;
                 }
-                else if (exponent <= order - 1) // constants are thrown away
+                else if (exponent <= order - 1) // constants and below are thrown away
                 {
-                    derivationFactor = 0;
+                    tVector[i] = 0;
+                    continue;
                 }
                 else
                 {

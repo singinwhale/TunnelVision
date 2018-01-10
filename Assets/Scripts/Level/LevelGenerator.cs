@@ -29,6 +29,7 @@ public class LevelGenerator : MonoBehaviour
     public bool ShowPoints = false;
 
     public bool ShowLines = false;
+    
 
     // Use this for initialization
     void Start()
@@ -44,7 +45,7 @@ public class LevelGenerator : MonoBehaviour
         List<Vector3> points = new List<Vector3>();
         for (int i = 0; i <= 360; i += 20)
         {
-            points.Add(Quaternion.AngleAxis(i,Vector3.up)*Vector3.right*10);
+            points.Add(new Vector3(i,Mathf.Cos(i/30)*10,Mathf.Sin(i/30)*10));
         }
         _spline.Points = points;
         UpdateMesh();
@@ -90,6 +91,7 @@ public class LevelGenerator : MonoBehaviour
             //Gizmos.color = Color.yellow;
             //Gizmos.DrawLine(val1,val1+t1);
         }
+        
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(_spline[t],Vector3.one*0.1f);
@@ -108,29 +110,34 @@ public class LevelGenerator : MonoBehaviour
                 Vector3 tangent = _spline.GetDerivative(u, 1);
                 Vector3 normal = Vector3.Cross(Vector3.Cross(tangent,_spline.GetDerivative(u+1.0f/MeshResolutionParallel,1)),tangent);
                 
+
                 //Generate tube segment
                 for (int n = 0; n < MeshResolutionNormal; n++)
                 {
+                    //rotate the normal arount the center
                     Vector3 vert = center + Quaternion.AngleAxis(n * 360.0f / MeshResolutionNormal, tangent) * normal.normalized * Radius;
                     vertices.Add(vert);
                 }
                 //connect tube segment to last one
                 if (i != 0 || x > 0)//do not do this for the very first segment
                 {
-                    int segmentFirstIndex = (i + x) * MeshResolutionNormal;
+                    //calculate stride per segment
+                    int segmentFirstIndex = (i * MeshResolutionParallel + x) * MeshResolutionNormal;
                     int lastSegmentFirstIndex = segmentFirstIndex - MeshResolutionNormal;
 
-                    for (int n = 1; n < MeshResolutionNormal; n++)
+                    for (int n = 1; n <= MeshResolutionNormal; n++)
                     {
                         //generate double faced quad between tube segments
+                        //using modulo to connect last vertex to first
                         triangles.AddRange(MakeQuad(
-                            lastSegmentFirstIndex+n,
-                            lastSegmentFirstIndex+n-1,
-                            segmentFirstIndex+n-1,
-                            segmentFirstIndex+n
+                            lastSegmentFirstIndex+n% MeshResolutionNormal,
+                            lastSegmentFirstIndex+(n-1)%MeshResolutionNormal,
+                            segmentFirstIndex+(n-1)% MeshResolutionNormal,
+                            segmentFirstIndex+n% MeshResolutionNormal
                             )
                         );
                     }
+
                 }
             }
 

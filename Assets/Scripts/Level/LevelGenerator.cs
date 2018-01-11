@@ -101,6 +101,7 @@ public class LevelGenerator : MonoBehaviour
     {
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
+        Vector3 oldNormal = Vector3.zero;
         for (int i = 0; i < _spline.Points.Count - 1; i++)
         {
             for (int x = 0; x < MeshResolutionParallel; x++)
@@ -109,7 +110,13 @@ public class LevelGenerator : MonoBehaviour
                 Vector3 center = _spline.Evaluate(u);
                 Vector3 tangent = _spline.GetDerivative(u, 1);
                 Vector3 normal = Vector3.Cross(Vector3.Cross(tangent,_spline.GetDerivative(u+1.0f/MeshResolutionParallel,1)),tangent);
-                
+
+                if (oldNormal == Vector3.zero) oldNormal = normal;
+                else
+                {
+                    normal = Vector3.RotateTowards(oldNormal, normal, Mathf.PI * 2 * 10.0f / 360.0f, 0);
+                    oldNormal = normal;
+                }
 
                 //Generate tube segment
                 for (int n = 0; n < MeshResolutionNormal; n++)

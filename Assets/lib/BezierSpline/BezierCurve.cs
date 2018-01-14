@@ -50,7 +50,7 @@ namespace Assets.lib
         public Vector3 GetDerivative(float t, int order)
         {
             // make sure t is in range [0,1]
-            Assert.IsFalse(t < 0.0f || 1.0f < t);
+            Assert.IsFalse(t < 0.0f || 1.0f < t,"t is not in Range [0,1]: t = " + t);
 
             Matrix<double> casteljau = GetCasteljauMatrix(pointsList.Count);
             Matrix<double> points = GetPointsMatrix();

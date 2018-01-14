@@ -11,7 +11,9 @@ public class LevelGenerator : MonoBehaviour
 {
     private BezierSpline _spline = null;
 
-    [Range(1,100)]
+	public BezierSpline Spline { get { return _spline; } }
+
+	[Range(1,100)]
     public int MeshResolutionParallel = 3;
     [Range(3, 64)]
     public int MeshResolutionNormal = 16;
@@ -24,13 +26,15 @@ public class LevelGenerator : MonoBehaviour
     //Debug settings
     public bool ShowNormals = false;
 
-    public bool ShowCurve = false;
+	public bool ShowTangents = false;
+
+	public bool ShowCurve = false;
 
     public bool ShowPoints = false;
 
     public bool ShowLines = false;
-    
-
+	
+	
     // Use this for initialization
     void Start()
     {
@@ -43,11 +47,12 @@ public class LevelGenerator : MonoBehaviour
         if(_spline == null) _spline = new BezierSpline();
 
         List<Vector3> points = new List<Vector3>();
-        for (int i = 0; i <= 360; i += 20)
+        for (int i = 0; i <= 1000; i += 20)
         {
             points.Add(new Vector3(i,Mathf.Cos(i/30)*10,Mathf.Sin(i/30)*10));
         }
         _spline.Points = points;
+
         UpdateMesh();
     }
 
@@ -70,7 +75,7 @@ public class LevelGenerator : MonoBehaviour
 
         int resolution = 10 ;
         
-        if(ShowNormals||ShowCurve)
+        if(ShowNormals||ShowCurve || ShowTangents)
         for (int i = 0; i < _spline.Points.Count* resolution - 1; i++)
         {
             float f = (float)i / ((float)_spline.Points.Count * resolution);
@@ -88,8 +93,9 @@ public class LevelGenerator : MonoBehaviour
             Gizmos.color = Color.cyan;
             if(ShowNormals)
             Gizmos.DrawLine(val1,val1+n1);
-            //Gizmos.color = Color.yellow;
-            //Gizmos.DrawLine(val1,val1+t1);
+            Gizmos.color = Color.yellow;
+			if(ShowTangents)
+            Gizmos.DrawLine(val1,val1+t1);
         }
         
 
@@ -153,6 +159,7 @@ public class LevelGenerator : MonoBehaviour
         GetComponent<MeshFilter>().sharedMesh.vertices = vertices.ToArray();
         GetComponent<MeshFilter>().sharedMesh.triangles = triangles.ToArray();
     }
+
 
     private static int[] MakeQuad(int a, int b, int c, int d)
     {

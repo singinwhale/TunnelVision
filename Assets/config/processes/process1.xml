@@ -1,0 +1,110 @@
+<Process name="Prozess 1" id="process_1">
+    <NodeGraph startNode="checkPresales" endNode="projectReport">
+        <Node id="checkPresales" name="Management prüfen">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="transferOffer"></NextNode>
+        </Node>
+
+        <Node id="transferOffer" name="Übertragung der Angebotsvereinbarungen">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="setPrioritiesAndDuties"></NextNode>
+        </Node>
+
+        <Node id="setPrioritiesAndDuties" name="Festlegen von Prioritäten und Zuständigkeit">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="processProject"></NextNode>
+        </Node>
+
+        <Node id="processProject" name="Projektbearbeitung/Abarbeitung offener Punkte">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="testProduct"></NextNode>
+        </Node>
+
+        <Node id="testProduct" name="Produkttest">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="setPrioritiesAndDuties"></NextNode>
+        </Node>
+
+        <Node id="productAcceptedBranch" name="Produkt von Kunde Akzeptiert?">
+            <PlayerTask type="Branch">
+                <Option id="yes" name="Ja">
+                    <NextNode id="customerDelivery" />
+                </Option>
+                <Option id="no" name="Nein">
+                    <NextNode id="processProject"/>
+                </Option>
+            </PlayerTask>
+        </Node>
+
+        <Node id="customerDelivery" name="Projektabnahme durch Kunden und Rechnungserstellung">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+            <NextNode id="setPrioritiesAndDuties"></NextNode>
+        </Node>
+
+        <Node id="projectReport" name="Projektabschlussbericht">
+            <PlayerTask type="RandomizedMultipleChoice">
+                <GeneratedOptions source="AllNodes"/>
+            </PlayerTask>
+        </Node>
+    </NodeGraph>
+
+    <Scenario id="badThingsAreHappening">
+        <Script>
+            <text><![CDATA[Prämisse des Szenarios]]></text>
+			<Node id="checkPresales"></Node>
+			<text><![CDATA[Fortführung 1]]></text>
+			<Node id="transferOffer"></Node>
+	        <text><![CDATA[Fortführung 2]]></text>
+	        <Node id="setPrioritiesAndDuties"></Node>
+	        <text><![CDATA[Fortführung 3]]></text>
+	        <Node id="processProject"></Node>
+	        <text><![CDATA[Fortführung 4]]></text>
+			<Node id="testProduct"></Node>
+			<text><![CDATA[Fortführung 5]]></text>
+			<Node id="productAcceptedBranch"></Node>
+			<text><![CDATA[Fortführung 6]]></text>
+	        <Node id="customerDelivery"></Node>
+	        <text><![CDATA[Fortführung 7]]></text>
+			<Node id="projectReport"></Node>
+	        <text><![CDATA[Ende]]></text>
+        </Script>
+    </Scenario>
+
+	<Scenario id="goodThingsAreHappening">
+		<Script>
+			<text><![CDATA[Prämisse des Szenarios]]></text>
+			<Node id="checkPresales"></Node>
+			<text><![CDATA[Fortführung 1]]></text>
+			<Node id="transferOffer"></Node>
+			<text><![CDATA[Fortführung 2]]></text>
+			<Node id="setPrioritiesAndDuties"></Node>
+			<text><![CDATA[Fortführung 3]]></text>
+			<Node id="processProject"></Node>
+			<text><![CDATA[Fortführung 4]]></text>
+			<Node id="testProduct"></Node>
+			<text><![CDATA[Fortführung 5]]></text>
+			<Node id="productAcceptedBranch"></Node>
+			<text><![CDATA[Fortführung 6]]></text>
+			<Node id="processProject"></Node>
+			<text><![CDATA[Fortführung 7]]></text>
+			<Node id="testProduct"></Node>
+			<text><![CDATA[Fortführung 8]]></text>
+			<Node id="customerDelivery"></Node>
+			<text><![CDATA[Fortführung 9]]></text>
+			<Node id="projectReport"></Node>
+			<text><![CDATA[Ende]]></text>
+		</Script>
+	</Scenario>
+</Process>

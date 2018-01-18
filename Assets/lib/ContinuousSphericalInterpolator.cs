@@ -4,9 +4,9 @@ namespace Assets.lib
 {
 	public class ContinuousSphericalInterpolator
 	{
-		private Vector3 _angularVelocity = Vector3.zero;
+		public Vector3 _angularVelocity = Vector3.zero;
 		public float Torque = 0;
-
+		private Matrix4x4 _inertiaTensor = new Matrix4x4();
 
 		private Quaternion _rotation = Quaternion.LookRotation(Vector3.right,Vector3.up);
 		public Quaternion Rotation
@@ -28,22 +28,28 @@ namespace Assets.lib
 			float targetAngle;
 			TargetRotation.ToAngleAxis(out targetAngle, out targetAxis);
 
-			//calculate target roation axis
-			Vector3 targetRotationAxis = Vector3.Cross(currentAxis, targetAxis);
+			//calculate torque
+			Vector3 torque = Vector3.Cross(currentAxis, targetAxis).normalized * Torque;
+			
+			//prevent overshoot
+			// t = alpha/((omega dot a)*|omega|)
+			float timeToTarget = Vector3.Angle(_angularVelocity,targetAxis)/(Vector3.Dot(_angularVelocity.normalized, targetAxis.normalized) * _angularVelocity.magnitude);
+			//if (timeToTarget <= torque.magnitude * 0.9 * 0.5 * timeToTarget)
+			//{
+			//	torque = -torque;
+			//}
+			//apply torque to omega
+			_angularVelocity += torque * deltaTime;
+			var rotationDelta = Quaternion.AngleAxis(torque.magnitude * deltaTime, torque.normalized);
+			//apply omega to rotation
+			Rotation = rotationDelta * Rotation;
+			
 
-			//accelerate towards target rotation
-			_angularVelocity += (targetRotationAxis -_angularVelocity.normalized) * Torque * deltaTime;
-			//detect overshoot
-			//if()
+			//Rotation = Quaternion.Slerp(Rotation, TargetRotation, 0.1f);
 
-			// do the rotating
-			Vector3 rotationAxis = _angularVelocity.normalized;
-			float rotationSpeed = _angularVelocity.magnitude;
-			Rotation = Quaternion.AngleAxis(rotationSpeed * deltaTime, rotationAxis) * Rotation;
-
-			_angularVelocity = rotationAxis.normalized * rotationSpeed;
-
+			
 			return Rotation;
 		}
+		
 	}
 }

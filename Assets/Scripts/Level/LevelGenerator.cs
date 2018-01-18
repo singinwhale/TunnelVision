@@ -39,21 +39,22 @@ public class LevelGenerator : MonoBehaviour
     void Start()
     {
         _spline = new BezierSpline();
-    }
+	    if (_spline == null) _spline = new BezierSpline();
+
+	    List<Vector3> points = new List<Vector3>();
+	    for (int i = 0; i <= 1000; i += 20)
+	    {
+		    points.Add(Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) * new Vector3(i, Mathf.Cos(i / 25.0F) * 10, Mathf.Sin(i / 25.0F) * 10));
+	    }
+	    _spline.Points = points;
+
+	    UpdateMesh();
+	}
     
     // Update is called once per frame
     void Update ()
     {
-        if(_spline == null) _spline = new BezierSpline();
-
-        List<Vector3> points = new List<Vector3>();
-        for (int i = 0; i <= 1000; i += 20)
-        {
-            points.Add(new Vector3(i,Mathf.Cos(i/30)*10,Mathf.Sin(i/30)*10));
-        }
-        _spline.Points = points;
-
-        UpdateMesh();
+        
     }
 
     void OnDrawGizmos()

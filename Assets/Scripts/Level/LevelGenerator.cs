@@ -42,9 +42,9 @@ public class LevelGenerator : MonoBehaviour
 	    if (_spline == null) _spline = new BezierSpline();
 
 	    List<Vector3> points = new List<Vector3>();
-	    for (int i = 0; i <= 1000; i += 20)
+	    for (int i = 0; i <= 2000; i += 20)
 	    {
-		    points.Add(Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) * new Vector3(i, Mathf.Cos(i / 25.0F) * 10, Mathf.Sin(i / 25.0F) * 10));
+		    points.Add(/*Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) **/ new Vector3(i, Mathf.Cos(i / 25.0F) * 10, Mathf.Sin(i / 25.0F) * 10));
 	    }
 	    _spline.Points = points;
 

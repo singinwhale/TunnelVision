@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using Assets.lib;
 using UnityEngine;
 
@@ -10,10 +12,9 @@ public class CameraController : MonoBehaviour
 	[SerializeField] private float _progress;
 
 	[SerializeField] private float _speed;
-	
 
-	private ContinuousSphericalInterpolator _sphericalInterpolator = new ContinuousSphericalInterpolator();
-	public float Torque = 10;
+	//private FileStream f;
+
 
 	// Use this for initialization
 	void Start ()
@@ -25,62 +26,43 @@ public class CameraController : MonoBehaviour
 
 		Vector3 tangent = _level.Spline.GetDerivative(_progress, 1);
 		Vector3 normal = _level.Spline.GetNormal(_progress);
-		_sphericalInterpolator.Rotation = transform.rotation;
+
+		//f = File.Open("debug.log", FileMode.Append);
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		_sphericalInterpolator.Torque = Torque;
 		_progress += _speed * Time.deltaTime;
 		Vector3 position = _level.Spline[_progress];
 
-		Vector3 targetTangent = _level.Spline.GetDerivative(_progress+2, 1),
-			targetNormal = _level.Spline.GetNormal(_progress+2);
+		Vector3 targetTangent = Vector3.zero,
+			targetNormal = Vector3.zero;
+
+		int nSamples = 10;
+		float sampleDistance = 2.0f;
+		for (int i = 0; i < nSamples; i++)
+		{
+			targetTangent += _level.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
+			targetNormal += _level.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
+		}
+		targetTangent /= nSamples;
+		targetNormal /= nSamples;
 
 		var targetRotation = Quaternion.LookRotation(targetTangent, targetNormal);
-		if (Quaternion.Angle(_sphericalInterpolator.Rotation, targetRotation) > 90)
-		{
-			_sphericalInterpolator.TargetRotation = Quaternion.LookRotation(targetTangent, targetNormal);
-		}
-		else
-		{
-			_sphericalInterpolator.TargetRotation = targetRotation;
-		}
+
+		var velocity = ((position - transform.position) / Time.deltaTime).magnitude;
+		//var bytes = Encoding.Convert(Encoding.ASCII, Encoding.UTF8, Encoding.ASCII.GetBytes((velocity+"\n").ToString()));
+		//f.Write(bytes,0, bytes.Length);
+		//Debug.Log(velocity);
 
 		transform.position = position;
-		transform.rotation = _sphericalInterpolator.Update(Time.deltaTime);
+		transform.rotation = targetRotation;
+
+		_speed = 1 + _progress / _level.Spline.Length * 3;
+		GetComponentInChildren<Camera>().fieldOfView = 90 + 30 * _progress / _level.Spline.Length;
+		
 		//transform.rotation = Quaternion.LookRotation(targetTangent, Vector3.up);
 	}
-
-	void OnDrawGizmos()
-	{
-		//Gizmos.DrawLine(transform.position, _level.Spline[_progress]);
-		var baseLoc = transform.position+(Vector3) (transform.localToWorldMatrix * new Vector3(0, 0, 3));
-
-		//draw current rotation
-		Vector3 axis;
-		float angle;
-		_sphericalInterpolator.Rotation.ToAngleAxis(out angle, out axis);
-
-
-		Gizmos.color = Color.red;
-		Gizmos.DrawLine(baseLoc + axis*3, baseLoc - axis*3);
-		Gizmos.color = Color.green;
-		Gizmos.DrawRay(baseLoc+new Vector3(0,0.04f,0), _sphericalInterpolator.Rotation * Vector3.right*3);
-		// draw target rotation
-		_sphericalInterpolator.TargetRotation.ToAngleAxis(out angle, out axis);
-		Gizmos.color = Color.magenta;
-		Gizmos.DrawLine(baseLoc + axis * 3, baseLoc - axis * 3);
-		Gizmos.color = Color.yellow;
-		Gizmos.DrawRay(baseLoc, _sphericalInterpolator.Rotation * Vector3.right * 3);
-		
-
-		//draw angular velocity
-		Gizmos.color =Color.cyan;
-		Gizmos.DrawRay(baseLoc,_sphericalInterpolator._angularVelocity);
-		
-
-		
-	}
+	
 }

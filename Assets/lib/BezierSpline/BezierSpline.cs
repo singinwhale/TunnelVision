@@ -51,7 +51,7 @@ namespace Assets.lib
 
         public Vector3 Evaluate(float u)
         {
-            u = Mathf.Clamp(u, 0, Length);
+            u = Mathf.Clamp(u, 0, Length - float.Epsilon);
             
             _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
             
@@ -60,7 +60,7 @@ namespace Assets.lib
 
         public Vector3 GetDerivative(float u, int order)
         {
-            u = Mathf.Clamp(u, 0, Length);
+            u = Mathf.Clamp(u, 0, Length - float.Epsilon);
 
             _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
 

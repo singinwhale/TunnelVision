@@ -318,6 +318,7 @@ MonoBehaviour:
   MeshResolutionParallel: 3
   MeshResolutionNormal: 34
   Radius: 5
+  ObstacleDensity: 2
   t: 27.1
   ShowNormals: 0
   ShowTangents: 0

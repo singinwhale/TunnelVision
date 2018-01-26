@@ -27,10 +27,30 @@ public class ObstacleController : MonoBehaviour
 		
 	}
 
+	public static GameObject Instantiate(ObstacleInitializer initializer)
+	{
+		var go = new GameObject("Obstacle");
+		var collider = go.AddComponent<MeshCollider>();
+		var meshfilter = go.AddComponent<MeshFilter>();
+		var meshrenderer = go.AddComponent<MeshRenderer>();
+		var oc = go.AddComponent<ObstacleController>();
+		oc._collider = collider;
+		oc._mesh = meshfilter;
+		oc._renderer = meshrenderer;
+
+		go.hideFlags = HideFlags.DontSave;
+
+		oc.Initialize(initializer);
+
+		return go;
+	}
+
 	public void Initialize(ObstacleInitializer initializer)
 	{
-		_mesh.sharedMesh.vertices = initializer.Vertices;
-		_mesh.sharedMesh.triangles = initializer.Triangles;
+		var mesh = new Mesh();
+		mesh.vertices = initializer.Vertices;
+		mesh.triangles = initializer.Triangles;
+		_mesh.sharedMesh = mesh;
 
 		_collider.sharedMesh = _mesh.sharedMesh;
 
@@ -56,4 +76,5 @@ public class ObstacleController : MonoBehaviour
 		public Color Color;
 		public Material Material;
 	}
+	
 }

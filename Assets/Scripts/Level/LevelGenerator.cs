@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Assets.lib;
+using Boo.Lang.Environments;
 using UnityEngine;
 using MathNet.Numerics.Interpolation;
+using UnityEditor;
 using UnityEngine.UI;
 
 [ExecuteInEditMode]
@@ -19,6 +21,8 @@ public class LevelGenerator : MonoBehaviour
     public int MeshResolutionNormal = 16;
 
     public float Radius = 3;
+
+	public float ObstacleDensity = 2;
 
     [Range(0,30)]
     public float t;
@@ -49,9 +53,16 @@ public class LevelGenerator : MonoBehaviour
 	    _spline.Points = points;
 
 	    UpdateMesh();
-	}
-    
-    // Update is called once per frame
+		foreach (var obstacleController in GameObject.FindObjectsOfType<ObstacleController>())
+		{
+			if(UnityEngine.Application.isEditor) DestroyImmediate(obstacleController.gameObject);
+			else Destroy(obstacleController.gameObject,0);
+		}
+	    GenerateObstacles();
+    }
+
+
+	// Update is called once per frame
     void Update ()
     {
         
@@ -162,6 +173,67 @@ public class LevelGenerator : MonoBehaviour
     }
 
 
+	private void GenerateObstacles()
+	{
+		for (float u = 0; u < _spline.Length; u += ObstacleDensity)
+		{
+			var initializer = new ObstacleController.ObstacleInitializer();
+			initializer.Text = "Test";
+			initializer.Color = Color.red;
+			//initializer.Material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Meshes/Materials/ObstacleMaterial.mat");
+			initializer.Material = this.GetComponent<MeshRenderer>().sharedMaterial;
+			SetObstacleMesh(ref initializer,u,Random.value*360);
+			var obstacle = ObstacleController.Instantiate(initializer);
+			obstacle.transform.position = _spline[u];
+		}
+	}
+
+	private void SetObstacleMesh(ref ObstacleController.ObstacleInitializer obstacle, float u, float angle)
+	{
+		Vector3 tangent = _spline.GetDerivative(u, 1);
+		Vector3 normal = _spline.GetNormal(u);
+
+		//make only half circle obstacles for now
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
+		
+		
+		for (float x = 0; x < Mathf.PI; x += Mathf.PI / MeshResolutionNormal)
+		{
+			float currAngle = Mathf.Deg2Rad * angle + x;
+			var rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * currAngle, tangent.normalized);
+			//create vertex on the half circle
+			Vector3 vertex = rotation * normal.normalized * Radius *2;
+			vertices.Add(vertex);
+			//add a second translated one so the obstacle has thickness. Assumes the spline is straight
+			vertex += tangent.normalized;
+			vertices.Add(vertex);
+
+			//connect the vertices on the outside of the circle
+			if (vertices.Count % 2 == 0 && vertices.Count > 2)
+			{
+				int index = vertices.Count - 1;
+				triangles.AddRange(MakeQuad(index, index - 1, index - 3, index - 2));
+			}
+		}
+
+		//close flat inside
+		int lastIndex = vertices.Count - 1;
+		triangles.AddRange(MakeQuad(0,1,lastIndex,lastIndex-1));
+
+		//close sides
+		for (int i = 2; i < vertices.Count-3; i += 2)
+		{
+			triangles.AddRange(MakeTri(0,i,i+2));
+			triangles.AddRange(MakeTri(1,i+1,i+3));
+		}
+
+
+		obstacle.Triangles = triangles.ToArray();
+		obstacle.Vertices = vertices.ToArray();
+	}
+
+
     private static int[] MakeQuad(int a, int b, int c, int d)
     {
         int[] ret =
@@ -173,4 +245,14 @@ public class LevelGenerator : MonoBehaviour
         };
         return ret;
     }
+
+	private static int[] MakeTri(int a, int b, int c)
+	{
+		int[] ret =
+		{
+			a, b, c,
+			a, c, b
+		};
+		return ret;
+	}
 }

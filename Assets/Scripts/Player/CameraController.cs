@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
 
 	public float SampleDistance = 1;
 
-	//private FileStream f;
+	private FileStream f;
 
 
 	// Use this for initialization
@@ -29,9 +29,9 @@ public class CameraController : MonoBehaviour
 		_progress = 1;
 
 		Vector3 tangent = _level.Spline.GetDerivative(_progress, 1);
-		Vector3 normal = _level.Spline.GetNormal(_progress);
+		Vector3 normal = _level.Spline.GetDerivative(_progress, 2);
 
-		//f = File.Open("debug.log", FileMode.Append);
+		f = File.Open("debug.log", FileMode.Append);
 	}
 	
 	// Update is called once per frame
@@ -60,8 +60,12 @@ public class CameraController : MonoBehaviour
 		{
 			//use an arbitrary progressSpeed to save the progression from stalling
 			_progressSpeed = _speed;
+			_progress += _progressSpeed * Time.deltaTime;
+			position = _level.Spline[_progress];
 		}
 
+
+		//sample the track before us so we can have smooth transitions in our rotation
 		Vector3 targetTangent = Vector3.zero,
 			targetNormal = Vector3.zero;
 
@@ -77,10 +81,10 @@ public class CameraController : MonoBehaviour
 
 		var targetRotation = Quaternion.LookRotation(targetTangent, targetNormal);
 
-		//var velocity = ((position - transform.position) / Time.deltaTime).magnitude;
-		//var bytes = Encoding.Convert(Encoding.ASCII, Encoding.UTF8, Encoding.ASCII.GetBytes((velocity+"\n").ToString()));
-		//f.Write(bytes,0, bytes.Length);
-		//Debug.Log(velocity);
+		var velocity = ((position - transform.position) / Time.deltaTime).magnitude;
+		var bytes = Encoding.Convert(Encoding.ASCII, Encoding.UTF8, Encoding.ASCII.GetBytes((velocity+"\n").ToString()));
+		f.Write(bytes,0, bytes.Length);
+		Debug.Log(velocity);
 
 		transform.position = position;
 		transform.rotation = targetRotation;

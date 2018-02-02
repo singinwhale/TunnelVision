@@ -36,16 +36,7 @@ namespace Assets.lib
         {
             return GetDerivative(t, 0);
         }
-
-        public Vector3 GetTangent(float t)
-        {
-            return GetDerivative(t, 1);
-        }
-
-        public Vector3 GetNormal(float t)
-        {
-            return GetDerivative(t, 2);
-        }
+		
 
         public Vector3 GetDerivative(float t, int order)
         {

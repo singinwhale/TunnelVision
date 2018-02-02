@@ -10,14 +10,13 @@ namespace Assets.lib
     {
         private List<Vector3> _pointsList;
 
-        private BezierCurve _curve;
+        private readonly BezierCurve _curve = new BezierCurve();
 
         public const int CurveOrder = 4;
 
 
         public BezierSpline()
         {
-            _curve = new BezierCurve();
         }
 
         public List<Vector3> Points
@@ -29,7 +28,7 @@ namespace Assets.lib
 
             set
             {
-                CalculateSharedPoints(value, out _pointsList);
+                _pointsList = CalculateSharedPoints(value);
             }
         }
 
@@ -68,20 +67,9 @@ namespace Assets.lib
         }
 
 
-
-
-        public int GetCurveFirstPointIndexForU(float u)
+		private static List<Vector3> CalculateSharedPoints(List<Vector3> rawPoints)
         {
-            int i = (int)u; 
-            
-            i = i - i % (CurveOrder - 1); //share last point
-            if (i > _pointsList.Count - CurveOrder) return _pointsList.Count - CurveOrder;
-            return i; 
-        }
-        
-        private static void CalculateSharedPoints(List<Vector3> rawPoints, out List<Vector3> curvablePoints)
-        {
-            curvablePoints = new List<Vector3>(); //one more point needed per curve
+			List<Vector3>  curvablePoints = new List<Vector3>();
 
             //add first batch
             curvablePoints.Add(rawPoints[0]);
@@ -102,21 +90,26 @@ namespace Assets.lib
             {
                 curvablePoints.Add(rawPoints[rawPoints.Count - 1]);
             }
+
+	        return curvablePoints;
         }
 
-        public float GetTForU(float u)
+
+	    private int GetCurveFirstPointIndexForU(float u)
+	    {
+		    int i = (int)u;
+
+		    i = i - i % (CurveOrder - 1); //share last point
+		    if (i > _pointsList.Count - CurveOrder) return _pointsList.Count - CurveOrder;
+		    return i;
+	    }
+
+		private float GetTForU(float u)
         {
             int firstPointIndex = GetCurveFirstPointIndexForU(u);
             float t = (u - firstPointIndex) / (CurveOrder - 1);
             t = Mathf.Clamp(t, 0, 1);
             return t;
-        }
-
-        public Vector3 GetNormal(float u)
-        {
-            int firstPointIndex = GetCurveFirstPointIndexForU(u);
-            _curve.Points = _pointsList.GetRange(firstPointIndex, CurveOrder);
-            return _curve.GetNormal((u - firstPointIndex) / CurveOrder); //[0,1] normalized value from u fraction
         }
 
     }

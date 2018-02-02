@@ -24,6 +24,8 @@ public class LevelGenerator : MonoBehaviour
 
 	public float ObstacleDensity = 2;
 
+	public float LevelLength = 1000;
+
     [Range(0,30)]
     public float t;
 
@@ -46,7 +48,7 @@ public class LevelGenerator : MonoBehaviour
 	    if (_spline == null) _spline = new BezierSpline();
 
 	    List<Vector3> points = new List<Vector3>();
-	    for (int i = 0; i <= 2000; i += 20)
+	    for (int i = 0; i <= LevelLength; i += 20)
 	    {
 		    points.Add(/*Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) **/ new Vector3(i, Mathf.Cos(i / 25.0F) * 10, Mathf.Sin(i / 25.0F) * 10));
 	    }
@@ -58,7 +60,12 @@ public class LevelGenerator : MonoBehaviour
 			if(UnityEngine.Application.isEditor) DestroyImmediate(obstacleController.gameObject);
 			else Destroy(obstacleController.gameObject,0);
 		}
-	    GenerateObstacles();
+	    foreach (var textMesh in GameObject.FindObjectsOfType<TextMesh>())
+	    {
+		    if (UnityEngine.Application.isEditor) DestroyImmediate(textMesh.gameObject);
+		    else Destroy(textMesh.gameObject, 0);
+	    }
+		GenerateObstacles();
     }
 
 
@@ -119,6 +126,8 @@ public class LevelGenerator : MonoBehaviour
     {
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
+
+		//we have to save our old normal so we can use that as a second vector for our normal calculation
         Vector3 oldNormal = Vector3.zero;
         for (int i = 0; i < _spline.Points.Count - 1; i++)
         {
@@ -177,12 +186,16 @@ public class LevelGenerator : MonoBehaviour
 	{
 		for (float u = 0; u < _spline.Length; u += ObstacleDensity)
 		{
+			//set up the initializer 
 			var initializer = new ObstacleController.ObstacleInitializer();
-			initializer.Text = "Test";
+			initializer.Text = "Test 1234 holdriö";
 			initializer.Color = Color.red;
-			//initializer.Material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Meshes/Materials/ObstacleMaterial.mat");
-			initializer.Material = this.GetComponent<MeshRenderer>().sharedMaterial;
+			initializer.Material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Meshes/Materials/ObstacleMaterial.mat");
+			//initializer.Material = this.GetComponent<MeshRenderer>().sharedMaterial;
 			SetObstacleMesh(ref initializer,u,Random.value*360);
+			initializer.Forward = _spline.GetDerivative(u, 1);
+			Vector3 normal = Vector3.Cross(_spline.GetDerivative(u, 2), _spline.GetDerivative(u, 1));
+			initializer.Up = Quaternion.AngleAxis(90,initializer.Forward) * normal;
 			var obstacle = ObstacleController.Instantiate(initializer);
 			obstacle.transform.position = _spline[u];
 		}
@@ -190,23 +203,25 @@ public class LevelGenerator : MonoBehaviour
 
 	private void SetObstacleMesh(ref ObstacleController.ObstacleInitializer obstacle, float u, float angle)
 	{
-		Vector3 tangent = _spline.GetDerivative(u, 1);
-		Vector3 normal = _spline.GetNormal(u);
+		Vector3 tangent = _spline.GetDerivative(u, 1).normalized;
+		//second derivative is not normal to the tangent vector
+		Vector3 normal = Vector3.Cross(_spline.GetDerivative(u, 2).normalized,tangent).normalized;
 
 		//make only half circle obstacles for now
 		List<Vector3> vertices = new List<Vector3>();
 		List<int> triangles = new List<int>();
 		
 		
-		for (float x = 0; x < Mathf.PI; x += Mathf.PI / MeshResolutionNormal)
+		for (float x = 0; x < 180; x += 180.0f / MeshResolutionNormal)
 		{
-			float currAngle = Mathf.Deg2Rad * angle + x;
-			var rotation = Quaternion.AngleAxis(Mathf.Rad2Deg * currAngle, tangent.normalized);
+			float currAngle = angle + x;
+			var rotation = Quaternion.AngleAxis(currAngle, tangent);
 			//create vertex on the half circle
-			Vector3 vertex = rotation * normal.normalized * Radius *2;
+			Vector3 vertex = rotation * (normal * Radius);
+			Debug.Log(vertex.magnitude);
 			vertices.Add(vertex);
-			//add a second translated one so the obstacle has thickness. Assumes the spline is straight
-			vertex += tangent.normalized;
+			//add a second translated one so the obstacle has thickness. Assumes the spline is straight for that short bit
+			vertex += tangent;
 			vertices.Add(vertex);
 
 			//connect the vertices on the outside of the circle

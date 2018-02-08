@@ -66,6 +66,16 @@ namespace Assets.lib
             return _curve.GetDerivative(GetTForU(u),order); //[0,1] normalized value from u fraction
         }
 
+	    public Vector3 GetNormal(float u)
+	    {
+
+		    u = Mathf.Clamp(u, 0, Length - float.Epsilon);
+
+		    _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
+
+			return _curve.GetNormal(GetTForU(u));
+	    }
+
 
 		private static List<Vector3> CalculateSharedPoints(List<Vector3> rawPoints)
         {

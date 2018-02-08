@@ -112,5 +112,26 @@ namespace Assets.lib
             }
             return m;
         }
+
+	    public Vector3 GetNormal(float t)
+	    {
+			var tangent = GetDerivative(t, 1);
+		    var curvature = GetDerivative(t, 2);
+
+		    //detect edge cases for straight lines
+		    if (Vector3.Cross(tangent, curvature) == Vector3.zero)
+		    {
+			    if (tangent.normalized == Vector3.up)
+			    {
+				    curvature = Vector3.right;
+			    }
+			    else
+			    {
+				    curvature = Vector3.up;
+			    }
+		    }
+		    var cross = Vector3.Cross(tangent, curvature);
+		    return Quaternion.AngleAxis(-90, tangent) * cross;
+		}
     }
 }

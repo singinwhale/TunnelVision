@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(MeshFilter))]
-public class LevelGenerator : MonoBehaviour
+public class GeometryGenerator : MonoBehaviour
 {
     private BezierSpline _spline = null;
 
@@ -50,9 +50,21 @@ public class LevelGenerator : MonoBehaviour
 	    List<Vector3> points = new List<Vector3>();
 	    for (int i = 0; i <= LevelLength; i += 20)
 	    {
-		    points.Add(/*Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) **/ new Vector3(i, Mathf.Cos(i / 25.0F) * 10, Mathf.Sin(i / 25.0F) * 10));
+		    points.Add(/*Quaternion.AngleAxis(i / (1000.0f / 360.0f), Vector3.up) **/ new Vector3(i, Mathf.Cos(i / 25.0F) * 20, Mathf.Sin(i / 25.0F) * 10));
 	    }
-	    _spline.Points = points;
+	    for (int i = (int) LevelLength; i <= LevelLength*2; i += 20)
+	    {
+		    points.Add(new Vector3(i,0,0));
+	    }
+	    for (int i = (int)LevelLength*2; i <= LevelLength*3; i += 20)
+	    {
+		    points.Add(new Vector3(i, 0, Mathf.Cos(i / 25.0F) * 20));
+	    }
+	    for (int i = (int)LevelLength * 3; i <= LevelLength * 4; i += 20)
+	    {
+		    points.Add(new Vector3(i, Mathf.Cos(i / 25.0F) * 20,0));
+	    }
+		_spline.Points = points;
 
 	    UpdateMesh();
 		foreach (var obstacleController in GameObject.FindObjectsOfType<ObstacleController>())
@@ -104,12 +116,13 @@ public class LevelGenerator : MonoBehaviour
             var t1 = _spline.GetDerivative(u1, 1);
             var u2 = (float)(i + 1)/ resolution;
             var val2 = _spline[u2];
-            var t2 = _spline.GetDerivative(u2, 1);
+            //var t2 = _spline.GetDerivative(u2, 1);
 
-            var n1 = Vector3.Cross(Vector3.Cross(t1, t2),t1);
-            if(ShowCurve)
+            //var n1 = Vector3.Cross(Vector3.Cross(t1, t2),t1)/100;;
+            var n1 = _spline.GetNormal(u1)/30;
+			if (ShowCurve)
             Gizmos.DrawLine(val1, val2);
-            Gizmos.color = Color.cyan;
+            Gizmos.color = new Color(59.0f/255.0f,62.0f / 255.0f,193.0f / 255.0f);
             if(ShowNormals)
             Gizmos.DrawLine(val1,val1+n1);
             Gizmos.color = Color.yellow;
@@ -136,17 +149,28 @@ public class LevelGenerator : MonoBehaviour
                 float u = i + ((float) x / MeshResolutionParallel);
                 Vector3 center = _spline.Evaluate(u);
                 Vector3 tangent = _spline.GetDerivative(u, 1);
-                Vector3 normal = Vector3.Cross(Vector3.Cross(tangent,_spline.GetDerivative(u+1.0f/MeshResolutionParallel,1)),tangent);
+                //Vector3 normal = Vector3.Cross(Vector3.Cross(tangent,_spline.GetDerivative(u+1.0f/MeshResolutionParallel,1)),tangent);
+	            Vector3 normal = _spline.GetNormal(u).normalized;
+				Debug.Log(normal);
 
-                if (oldNormal == Vector3.zero) oldNormal = normal;
+				if (oldNormal == Vector3.zero) oldNormal = normal;
                 else
-                {
-                    normal = Vector3.RotateTowards(oldNormal, normal, Mathf.PI * 2 * 10.0f / 360.0f, 0);
-                    oldNormal = normal;
-                }
+				{
+					Plane p = new Plane(tangent,Vector3.zero);
 
-                //Generate tube segment
-                for (int n = 0; n < MeshResolutionNormal; n++)
+					Vector3 newNormal = Vector3.RotateTowards(oldNormal, normal, Mathf.Deg2Rad * 10.0f, 0);
+					newNormal = Vector3.RotateTowards(newNormal, p.ClosestPointOnPlane(oldNormal), Mathf.Deg2Rad* 10.0f, 0);
+					if (newNormal != normal && Vector3.Cross(Vector3.Cross(tangent, oldNormal), Vector3.Cross(tangent, newNormal)) == Vector3.zero) // check if all vectors are planar
+					{
+						newNormal = Quaternion.AngleAxis(10, tangent) * oldNormal; // just rotate because they oppose each other so it does not matter how we rotate
+					}
+                    oldNormal = newNormal;
+					normal = newNormal;
+				}
+				Debug.DrawRay(center,normal*30, Color.red,100);
+
+				//Generate tube segment
+				for (int n = 0; n < MeshResolutionNormal; n++)
                 {
                     //rotate the normal arount the center
                     Vector3 vert = center + Quaternion.AngleAxis(n * 360.0f / MeshResolutionNormal, tangent) * normal.normalized * Radius;
@@ -192,20 +216,20 @@ public class LevelGenerator : MonoBehaviour
 			initializer.Color = Color.red;
 			initializer.Material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Meshes/Materials/ObstacleMaterial.mat");
 			//initializer.Material = this.GetComponent<MeshRenderer>().sharedMaterial;
-			SetObstacleMesh(ref initializer,u,Random.value*360);
+			GenerateObstacleMesh(ref initializer,u,Random.value*360);
 			initializer.Forward = _spline.GetDerivative(u, 1);
-			Vector3 normal = Vector3.Cross(_spline.GetDerivative(u, 2), _spline.GetDerivative(u, 1));
+			Vector3 normal = _spline.GetNormal(u);//Vector3.Cross(_spline.GetDerivative(u, 2), _spline.GetDerivative(u, 1)));
 			initializer.Up = Quaternion.AngleAxis(90,initializer.Forward) * normal;
 			var obstacle = ObstacleController.Instantiate(initializer);
 			obstacle.transform.position = _spline[u];
 		}
 	}
 
-	private void SetObstacleMesh(ref ObstacleController.ObstacleInitializer obstacle, float u, float angle)
+	private void GenerateObstacleMesh(ref ObstacleController.ObstacleInitializer obstacle, float u, float angle)
 	{
 		Vector3 tangent = _spline.GetDerivative(u, 1).normalized;
-		//second derivative is not normal to the tangent vector
-		Vector3 normal = Vector3.Cross(_spline.GetDerivative(u, 2).normalized,tangent).normalized;
+
+		Vector3 normal = _spline.GetNormal(u).normalized;
 
 		//make only half circle obstacles for now
 		List<Vector3> vertices = new List<Vector3>();
@@ -218,7 +242,6 @@ public class LevelGenerator : MonoBehaviour
 			var rotation = Quaternion.AngleAxis(currAngle, tangent);
 			//create vertex on the half circle
 			Vector3 vertex = rotation * (normal * Radius);
-			Debug.Log(vertex.magnitude);
 			vertices.Add(vertex);
 			//add a second translated one so the obstacle has thickness. Assumes the spline is straight for that short bit
 			vertex += tangent;

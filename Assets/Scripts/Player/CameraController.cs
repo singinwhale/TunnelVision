@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-	private LevelGenerator _level;
+	private GeometryGenerator _geometryGenerator;
 
 	[SerializeField] private float _progress;
 
@@ -23,15 +23,15 @@ public class CameraController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		_level = FindObjectOfType<LevelGenerator>();
-		if(!_level) Debug.Log("LevelGenerator could not be found!");
+		_geometryGenerator = FindObjectOfType<GeometryGenerator>();
+		if(!_geometryGenerator) Debug.Log("GeometryGenerator could not be found!");
 
 		_progress = 1;
 
-		Vector3 tangent = _level.Spline.GetDerivative(_progress, 1);
-		Vector3 normal = _level.Spline.GetDerivative(_progress, 2);
+		Vector3 tangent = _geometryGenerator.Spline.GetDerivative(_progress, 1);
+		Vector3 normal = _geometryGenerator.Spline.GetNormal(_progress);
 
-		f = File.Open("debug.log", FileMode.Append);
+		//f = File.Open("debug.log", FileMode.Append);
 	}
 	
 	// Update is called once per frame
@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour
 	{
 		//sample progress at normal speed and then resample with a adjusted value that should provide for a more linear speed
 		float progressDelta = _progressSpeed * Time.deltaTime;
-		Vector3 position = _level.Spline[_progress+progressDelta];
+		Vector3 position = _geometryGenerator.Spline[_progress+progressDelta];
 
 		//calculate the speed which we apparantly have in the world
 		float actualSpeed = ((position - transform.position).magnitude / Time.deltaTime);
@@ -53,7 +53,7 @@ public class CameraController : MonoBehaviour
 			_progressSpeed = progressDelta * error / Time.deltaTime;
 			float newSamplePoint = _progress + progressDelta * error;
 
-			position = _level.Spline[newSamplePoint];
+			position = _geometryGenerator.Spline[newSamplePoint];
 			_progress = newSamplePoint;
 		}
 		else
@@ -61,7 +61,7 @@ public class CameraController : MonoBehaviour
 			//use an arbitrary progressSpeed to save the progression from stalling
 			_progressSpeed = _speed;
 			_progress += _progressSpeed * Time.deltaTime;
-			position = _level.Spline[_progress];
+			position = _geometryGenerator.Spline[_progress];
 		}
 
 
@@ -73,8 +73,8 @@ public class CameraController : MonoBehaviour
 		float sampleDistance = SampleDistance;
 		for (int i = 0; i < nSamples; i++)
 		{
-			targetTangent += _level.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
-			targetNormal += _level.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
+			targetTangent += _geometryGenerator.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
+			targetNormal += _geometryGenerator.Spline.GetDerivative(_progress + (sampleDistance * i / nSamples), 1);
 		}
 		targetTangent /= nSamples;
 		targetNormal /= nSamples;
@@ -83,8 +83,7 @@ public class CameraController : MonoBehaviour
 
 		var velocity = ((position - transform.position) / Time.deltaTime).magnitude;
 		var bytes = Encoding.Convert(Encoding.ASCII, Encoding.UTF8, Encoding.ASCII.GetBytes((velocity+"\n").ToString()));
-		f.Write(bytes,0, bytes.Length);
-		Debug.Log(velocity);
+		//f.Write(bytes,0, bytes.Length);
 
 		transform.position = position;
 		transform.rotation = targetRotation;

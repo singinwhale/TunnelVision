@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-	private GeometryGenerator _geometryGenerator;
+	private DebugGeometryGenerator _geometryGenerator;
 
 	[SerializeField] private float _progress;
 
@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		_geometryGenerator = FindObjectOfType<GeometryGenerator>();
+		_geometryGenerator = FindObjectOfType<DebugGeometryGenerator>();
 		if(!_geometryGenerator) Debug.Log("GeometryGenerator could not be found!");
 
 		_progress = 1;

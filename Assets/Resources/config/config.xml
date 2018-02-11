@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config>
+	<Level>
+		<Mesh>
+			<Resolution parallel="4" normal="16"/>
+			<Radius>5.0</Radius>
+		</Mesh>
+		<Obstacles>
+			<Density>2.0</Density>
+		</Obstacles>
+	</Level>
+
+	<Player>
+		<Camera>
+			<FieldOfView>100.0</FieldOfView>
+			<!--Smoothing Distance for the Up-Vector-->
+			<SampleDstance>1.0</SampleDstance>
+		</Camera>
+		<!--Stats of the players avatar = stats of the pawn-->
+		<Pawn>
+			<Speed>5.0</Speed>
+		</Pawn>
+	</Player>
+</Config>

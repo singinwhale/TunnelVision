@@ -27,7 +27,6 @@ namespace Assets.lib.System.Level
 					BindingFlags.Public|BindingFlags.CreateInstance,
 					step
 				);
-
 		}
 	}
 }

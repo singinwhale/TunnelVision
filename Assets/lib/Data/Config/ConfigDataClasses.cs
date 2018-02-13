@@ -33,6 +33,13 @@ namespace Assets.lib.Data.Config.Xml
 		public float Density { get; set; }
 	}
 
+	[XmlRoot(ElementName = "Material")]
+	public class Material
+	{
+		[XmlAttribute(AttributeName = "path")]
+		public string Path { get; set; }
+	}
+
 	[XmlRoot(ElementName = "Level")]
 	public class Level
 	{
@@ -40,6 +47,9 @@ namespace Assets.lib.Data.Config.Xml
 		public Mesh Mesh { get; set; }
 		[XmlElement(ElementName = "Obstacles")]
 		public Obstacles Obstacles { get; set; }
+
+		[XmlElement(ElementName = "Material")]
+		public Material Material { get; set; }
 	}
 
 	[XmlRoot(ElementName = "Camera")]

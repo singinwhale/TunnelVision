@@ -2,12 +2,20 @@
 <Config>
 	<Level>
 		<Mesh>
-			<Resolution parallel="4" normal="16"/>
+			<Resolution parallel="4" normal="24"/>
 			<Radius>5.0</Radius>
+			<Material path="Resources/Materials/tunnelMaterial"/>
 		</Mesh>
 		<Obstacles>
 			<Density>2.0</Density>
 		</Obstacles>
+		<Colors>
+			<Default>
+				<Color name="ObstacleColor">FF553200</Color>
+				<Color name="ForegroundColor">FF553200</Color>
+				<Color name="BackgroundColor">00000000</Color>
+			</Default>
+		</Colors>
 	</Level>
 
 	<Player>

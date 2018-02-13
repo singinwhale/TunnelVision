@@ -7,6 +7,10 @@ namespace Assets.lib.View.Shapers
 	/// </summary>
 	public interface IShaper
 	{
-		Vector3[] GetNextChunk(Vector3 lastPoint, Vector3 direction, float length);
+		float Start { get; set; }
+		float Length { get; set; }
+		
+		
+		Vector3[] GetChunk(Vector3 lastPoint, Vector3 direction, float offset, float length);
 	}
 }

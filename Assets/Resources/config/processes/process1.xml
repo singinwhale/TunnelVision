@@ -4,35 +4,35 @@
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="transferOffer"></NextNode>
+            <NextNode id="transferOffer"/>
         </Node>
 
         <Node id="transferOffer" name="Übertragung der Angebotsvereinbarungen">
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="setPrioritiesAndDuties"></NextNode>
+            <NextNode id="setPrioritiesAndDuties"/>
         </Node>
 
         <Node id="setPrioritiesAndDuties" name="Festlegen von Prioritäten und Zuständigkeit">
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="processProject"></NextNode>
+            <NextNode id="processProject"/>
         </Node>
 
         <Node id="processProject" name="Projektbearbeitung/Abarbeitung offener Punkte">
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="testProduct"></NextNode>
+            <NextNode id="testProduct"/>
         </Node>
 
         <Node id="testProduct" name="Produkttest">
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="setPrioritiesAndDuties"></NextNode>
+            <NextNode id="setPrioritiesAndDuties"/>
         </Node>
 
         <Node id="productAcceptedBranch" name="Produkt von Kunde Akzeptiert?">
@@ -41,15 +41,15 @@
                 <Option id="no" name="Nein"></Option>
             </PlayerTask>
 
-	        <NextNode id="customerDelivery"></NextNode>
-	        <NextNode id="processProject"></NextNode>
+	        <NextNode id="customerDelivery"/>
+	        <NextNode id="processProject"/>
         </Node>
 
         <Node id="customerDelivery" name="Projektabnahme durch Kunden und Rechnungserstellung">
             <PlayerTask type="RandomizedMultipleChoice">
                 <GeneratedOptions source="AllNodes"/>
             </PlayerTask>
-            <NextNode id="setPrioritiesAndDuties"></NextNode>
+            <NextNode id="setPrioritiesAndDuties"/>
         </Node>
 
         <Node id="projectReport" name="Projektabschlussbericht">

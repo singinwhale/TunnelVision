@@ -28,7 +28,7 @@ public class ObstacleController : MonoBehaviour
 	void Update ()
 	{
 		var camera = FindObjectOfType<Camera>();
-		_textGameObject.transform.rotation = Quaternion.LookRotation(_initializer.Forward, camera.transform.up);
+		//_textGameObject.transform.rotation = Quaternion.LookRotation(_initializer.Forward, camera.transform.up);
 	}
 
 	public static GameObject Instantiate(ObstacleInitializer initializer)
@@ -60,8 +60,9 @@ public class ObstacleController : MonoBehaviour
 
 		_renderer.sharedMaterial = initializer.Material;
 		_renderer.sharedMaterial.color = initializer.Color;
-		
 
+
+		return;
 		//BEGIN instantiate new TextMesh GameObject
 		var obj = new GameObject(initializer.Text, typeof(MeshRenderer), typeof(TextMesh));
 		obj.transform.parent = transform;

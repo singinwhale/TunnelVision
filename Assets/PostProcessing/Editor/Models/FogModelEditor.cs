@@ -1,4 +1,4 @@
-using UnityEngine.PostProcessing;
+using PostProcessing.Runtime.Models;
 
 namespace UnityEditor.PostProcessing
 {

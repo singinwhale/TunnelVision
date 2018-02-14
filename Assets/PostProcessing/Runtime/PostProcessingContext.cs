@@ -1,4 +1,7 @@
-namespace UnityEngine.PostProcessing
+using PostProcessing.Runtime.Utils;
+using UnityEngine;
+
+namespace PostProcessing.Runtime
 {
     public class PostProcessingContext
     {

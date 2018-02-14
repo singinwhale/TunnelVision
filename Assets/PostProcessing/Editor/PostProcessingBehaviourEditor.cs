@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using UnityEngine.PostProcessing;
+using PostProcessing.Runtime;
 
 namespace UnityEditor.PostProcessing
 {

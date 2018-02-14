@@ -1,4 +1,7 @@
-namespace UnityEngine.PostProcessing
+using PostProcessing.Runtime.Models;
+using UnityEngine;
+
+namespace PostProcessing.Runtime.Components
 {
     public sealed class UserLutComponent : PostProcessingComponentRenderTexture<UserLutModel>
     {

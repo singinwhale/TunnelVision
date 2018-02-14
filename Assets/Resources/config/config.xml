@@ -23,6 +23,8 @@
 			<FieldOfView>100.0</FieldOfView>
 			<!--Smoothing Distance for the Up-Vector-->
 			<SampleDstance>1.0</SampleDstance>
+			<!-- Default speed at which the camera flies through the level -->
+			<Speed>20</Speed>
 		</Camera>
 		<!--Stats of the players avatar = stats of the pawn-->
 		<Pawn>

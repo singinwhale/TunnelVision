@@ -1,6 +1,7 @@
 using System;
+using UnityEngine;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Models
 {
     [Serializable]
     public class UserLutModel : PostProcessingModel

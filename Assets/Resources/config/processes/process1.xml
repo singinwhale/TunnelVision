@@ -1,4 +1,4 @@
-<Process name="Prozess 1" id="process_1">
+<Process name="Prozess 1" id="process_1" color="FF5532FF">
     <NodeGraph startNode="checkPresales" endNode="projectReport">
         <Node id="checkPresales" name="Management prüfen">
             <PlayerTask type="RandomizedMultipleChoice">

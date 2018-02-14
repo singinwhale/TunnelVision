@@ -1,4 +1,6 @@
-namespace UnityEngine.PostProcessing
+using UnityEngine;
+
+namespace PostProcessing.Runtime.Attributes
 {
     public sealed class GetSetAttribute : PropertyAttribute
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace Assets.lib.Data.Node
+namespace lib.Data.Node
 {
 	public partial class NodeGraph
 	{
@@ -73,6 +73,11 @@ namespace Assets.lib.Data.Node
 				}
 				xPathNavigator.MoveToParent();
 			} while (xPathNavigator.MoveToNext("Node",""));
+		}
+		
+		public Node this[String nodeID]
+		{
+			get { return _nodes[nodeID]; }
 		}
 	}
 }

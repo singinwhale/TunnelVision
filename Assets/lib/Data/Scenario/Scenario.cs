@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
-using Assets.lib.Data.Node;
+using lib.Data.Node;
 
-namespace Assets.lib.Data
+namespace lib.Data.Scenario
 {
 	public partial class Scenario
 	{
@@ -24,11 +24,12 @@ namespace Assets.lib.Data
 			{
 				if (xPathNavigator.LocalName == "Text")
 				{
-
+					Steps.Add(new TextStep(xPathNavigator.InnerXml));
 				}
 				else if (xPathNavigator.LocalName == "Node")
 				{
-
+					var node = graph[xPathNavigator.GetAttribute("id", "")];
+					Steps.Add(new NodeStep(node));
 				}
 				else
 				{

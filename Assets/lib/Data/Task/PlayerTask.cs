@@ -1,4 +1,4 @@
-﻿namespace Assets.lib.Data.Task
+﻿namespace lib.Data.Task
 {
 	public class PlayerTask
 	{

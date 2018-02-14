@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Assets.lib.View.BezierSpline
+namespace lib.View.BezierSpline
 {
     public class BezierCurve
     {

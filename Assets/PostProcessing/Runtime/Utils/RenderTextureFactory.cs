@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Utils
 {
     public sealed class RenderTextureFactory : IDisposable
     {

@@ -1,5 +1,6 @@
+using PostProcessing.Runtime.Models;
+using PostProcessing.Runtime.Utils;
 using UnityEngine;
-using UnityEngine.PostProcessing;
 
 namespace UnityEditor.PostProcessing
 {

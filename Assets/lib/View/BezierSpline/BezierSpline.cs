@@ -1,40 +1,45 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
-namespace Assets.lib.View.BezierSpline
+namespace lib.View.BezierSpline
 {
     public class BezierSpline
     {
-        private List<Vector3> _pointsList;
+        private List<Vector3> _pointsList = new List<Vector3>();
+        private List<Vector3> _givenPoints;
 
         private readonly BezierCurve _curve = new BezierCurve();
 
         public const int CurveOrder = 4;
 
 
-        public BezierSpline()
-        {
-        }
-
         public List<Vector3> Points
         {
             get
             {
-                return _pointsList;
+                return _givenPoints;
             }
 
             set
             {
                 _pointsList = CalculateSharedPoints(value);
+                _givenPoints = value;
             }
         }
+
 
         public float Length
         {
             get
             {
-                return _pointsList.Count - 1 - float.Epsilon;
+                return _pointsList.Count - 1 /*- float.Epsilon*/;
             }
+        }
+
+        public ReadOnlyCollection<Vector3> RawPoints
+        {
+            get { return _pointsList.AsReadOnly(); }
         }
 
         public Vector3 this[float u]

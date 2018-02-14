@@ -1,4 +1,4 @@
-﻿namespace Assets.lib.System.Level.Tasks
+﻿namespace lib.System.Level.Tasks
 {
 	public interface IPlayerTaskController
 	{

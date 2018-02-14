@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using System.Xml.XPath;
 using UnityEngine;
 
-namespace Assets.lib.Data.Config
+namespace lib.Data.Config
 {
 	public class Config
 	{
@@ -28,7 +28,7 @@ namespace Assets.lib.Data.Config
 		public List<Process> Processes { get; private set; }
 
 		public Xml.Config Global { get; private set;}
-
+		
 		private Config()
 		{
 			// read the normal config values from the config.xml file

@@ -1,6 +1,8 @@
+using PostProcessing.Runtime.Models;
+using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Components
 {
     using SSRResolution = ScreenSpaceReflectionModel.SSRResolution;
     using SSRReflectionBlendType = ScreenSpaceReflectionModel.SSRReflectionBlendType;

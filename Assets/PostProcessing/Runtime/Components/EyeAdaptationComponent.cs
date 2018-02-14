@@ -1,4 +1,8 @@
-namespace UnityEngine.PostProcessing
+using PostProcessing.Runtime.Models;
+using PostProcessing.Runtime.Utils;
+using UnityEngine;
+
+namespace PostProcessing.Runtime.Components
 {
     public sealed class EyeAdaptationComponent : PostProcessingComponentRenderTexture<EyeAdaptationModel>
     {

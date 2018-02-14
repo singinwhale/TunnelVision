@@ -1,4 +1,4 @@
-﻿namespace Assets.lib.Data.Node
+﻿namespace lib.Data.Node
 {
 	partial class NodeGraph
 	{

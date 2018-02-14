@@ -3,10 +3,10 @@
 
  http://www.apache.org/licenses/LICENSE-2.0
  */
-using System;
+
 using System.Xml.Serialization;
-using System.Collections.Generic;
-namespace Assets.lib.Data.Config.Xml
+
+namespace lib.Data.Xml
 {
 	[XmlRoot(ElementName = "Resolution")]
 	public class Resolution
@@ -59,6 +59,9 @@ namespace Assets.lib.Data.Config.Xml
 		public float FieldOfView { get; set; }
 		[XmlElement(ElementName = "SampleDstance")]
 		public float SampleDstance { get; set; }
+
+		[XmlElement(ElementName = "Speed")]
+		public float Speed { get; set; }
 	}
 
 	[XmlRoot(ElementName = "Pawn")]

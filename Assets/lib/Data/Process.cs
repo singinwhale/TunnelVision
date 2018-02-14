@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
-using Assets.lib.Data.Node;
+using lib.Data.Node;
 
-namespace Assets.lib.Data
+namespace lib.Data
 {
 	/// <summary>
 	/// A Data class that represents a QM-Process. Gives Information about this process like:
@@ -23,7 +22,7 @@ namespace Assets.lib.Data
 
 		public NodeGraph Graph { get; private set; }
 
-		public List<Scenario> Scenarios { get; private set; }
+		public List<Scenario.Scenario> Scenarios { get; private set; }
 
 		public Process(XPathNavigator xPathNavigator)
 		{
@@ -41,14 +40,14 @@ namespace Assets.lib.Data
 			}
 
 			// Read all scenarios
-			Scenarios = new List<Scenario>();
+			Scenarios = new List<Scenario.Scenario>();
 			if (!xPathNavigator.MoveToNext("Scenario", ""))
 			{
 				throw new XmlException("Tag 'Scenario' could not be found!");
 			}
 			do
 			{
-				Scenarios.Add(new Scenario(Graph, xPathNavigator.Clone()));
+				Scenarios.Add(new Scenario.Scenario(Graph, xPathNavigator.Clone()));
 			} while (xPathNavigator.MoveToNext("Scenario", ""));
 		}
 	}

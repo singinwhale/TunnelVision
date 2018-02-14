@@ -1,6 +1,9 @@
 using System;
+using PostProcessing.Runtime.Attributes;
+using PostProcessing.Runtime.Utils;
+using UnityEngine;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Models
 {
     [Serializable]
     public class ColorGradingModel : PostProcessingModel

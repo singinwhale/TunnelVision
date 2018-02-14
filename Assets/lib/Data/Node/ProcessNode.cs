@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml;
+﻿using System.Collections.Generic;
 using System.Xml.XPath;
-using Assets.lib.Data.Task;
 
-namespace Assets.lib.Data.Node
+namespace lib.Data.Node
 {
 	partial class NodeGraph
 	{

@@ -1,6 +1,9 @@
+using PostProcessing.Runtime.Models;
+using PostProcessing.Runtime.Utils;
+using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Components
 {
     using Settings = MotionBlurModel.Settings;
 

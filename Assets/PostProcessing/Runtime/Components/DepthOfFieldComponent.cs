@@ -1,6 +1,7 @@
-using UnityEngine.Rendering;
+using PostProcessing.Runtime.Models;
+using UnityEngine;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Components
 {
     using DebugMode = BuiltinDebugViewsModel.Mode;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Assets.lib.Data.Config;
-using Assets.lib.View.BezierSpline;
+using lib.Data.Config;
+using lib.View.BezierSpline;
 using UnityEngine;
 
 namespace Level
@@ -70,36 +70,34 @@ namespace Level
 				else Destroy(textMesh.gameObject, 0);
 			}
 			GenerateObstacles();
-
-			var x = Config.Instance.Processes;
-		
 		}
 
 
 
 		void OnDrawGizmos()
 		{
+			if (Spline == null) return;
 			if(ShowLines)
-				for (int i = 0; i < Spline.Points.Count - 1; i++)
+				for (int i = 0; i < Spline.RawPoints.Count - 1; i++)
 				{
-					float f = (float)i / (float)Spline.Points.Count;
+					float f = (float)i / (float)Spline.Length;
 					Gizmos.color = new Color(f, 1 - f, 1 - f);
-					Gizmos.DrawLine(Spline.Points[i], Spline.Points[i + 1]);
+					Gizmos.DrawLine(Spline.RawPoints[i], Spline.RawPoints[i + 1]);
 				}
 
 			if(ShowPoints)
-				for (int i = 0; i < Spline.Points.Count; i++)
+				for (int i = 0; i < Spline.Length; i++)
 				{
 					Gizmos.color = Color.red;
-					Gizmos.DrawWireCube(Spline.Points[i], Vector3.one);
+					Gizmos.DrawWireCube(Spline.RawPoints[i], Vector3.one);
 				}
 
 			int resolution = 10 ;
         
 			if(ShowNormals||ShowCurve || ShowTangents)
-				for (int i = 0; i < Spline.Points.Count* resolution - 1; i++)
+				for (int i = 0; i < Spline.Length* resolution - 1; i++)
 				{
-					float f = (float)i / ((float)Spline.Points.Count * resolution);
+					float f = (float)i / ((float)Spline.Length * resolution);
 					Gizmos.color = new Color(1 - f, f, 1 - f);
 					var u1 = (float)i/ resolution;
 					var val1 = Spline[u1];
@@ -137,7 +135,7 @@ namespace Level
 			var Radius = Config.Instance.Global.Level.Mesh.Radius;
 			//we have to save our old normal so we can use that as a second vector for our normal calculation
 			Vector3 oldNormal = Vector3.zero;
-			for (int i = 0; i < Spline.Points.Count - 1; i++)
+			for (int i = 0; i < Spline.Length; i++)
 			{
 				for (int x = 0; x < MeshResolutionParallel; x++)
 				{
@@ -168,7 +166,7 @@ namespace Level
 						//rotate the normal arount the center
 						Vector3 vert = center + Quaternion.AngleAxis(n * 360.0f / MeshResolutionNormal, tangent) * normal.normalized * Radius;
 						vertices.Add(vert);
-						float xUV = (float)(i * MeshResolutionParallel + x) / (float)(Spline.Points.Count * MeshResolutionParallel);
+						float xUV = (float)(i * MeshResolutionParallel + x) / (float)(Spline.Length * MeshResolutionParallel);
 						float yUV = (float) n / MeshResolutionNormal;
 						UVs.Add(new Vector2(xUV, yUV));
 

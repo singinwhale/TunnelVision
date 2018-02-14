@@ -1,6 +1,9 @@
 using System;
+using PostProcessing.Runtime.Models;
+using PostProcessing.Runtime.Utils;
+using UnityEngine;
 
-namespace UnityEngine.PostProcessing
+namespace PostProcessing.Runtime.Components
 {
     public sealed class TaaComponent : PostProcessingComponentRenderTexture<AntialiasingModel>
     {

@@ -1,9 +1,11 @@
 using UnityEngine;
-using UnityEngine.PostProcessing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using PostProcessing.Runtime;
+using PostProcessing.Runtime.Models;
+using PostProcessing.Runtime.Utils;
 
 namespace UnityEditor.PostProcessing
 {

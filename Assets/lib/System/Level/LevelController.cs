@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using lib.Data.Scenario;
 using lib.System.Player;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace lib.System.Level
 {
@@ -57,10 +59,10 @@ namespace lib.System.Level
 			foreach (var scenarioStep in _scenario.Steps)
 			{
 				var levelNodeController = new LevelNodeController(previous, scenarioStep);
-				_nodes.AddLast(levelNodeController);
 				levelNodeController.OnFinished += OnNodeFinished;
 				levelNodeController.OnLengthChanged += Level.OnNodeChangedLength;
 				previous = levelNodeController;
+				_nodes.AddLast(levelNodeController);
 			}
 			_currentListNode = _nodes.First;
 			
@@ -82,6 +84,7 @@ namespace lib.System.Level
 			//tick the entire level
 			Level.Tick();
 		}
+
 
 		public void OnNodeFinished(LevelNodeController nodeController)
 		{

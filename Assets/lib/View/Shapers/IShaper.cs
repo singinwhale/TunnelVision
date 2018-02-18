@@ -24,6 +24,6 @@ namespace lib.View.Shapers
 		/// <param name="length">The length of the corresponding chunk</param>
 		void UpdateSplinePoints(IShaper previous, int length);
 
-		Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previus, int offset, int length);
+		Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length);
 	}
 }

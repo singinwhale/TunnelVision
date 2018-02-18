@@ -7,7 +7,6 @@ namespace lib.View.Shapers
     public class RandomShaper : Shaper
     {
         public float Spacing = 50;
-        private int _progress = 0;
         private float outerAngle = 30;
         private Random.State _RNGState;
         
@@ -20,7 +19,7 @@ namespace lib.View.Shapers
 
         public override void UpdateSplinePoints(IShaper previous, int length)
         {
-            
+            SplinePoints = new List<Vector3>();
             if(SplinePoints.Count ==0)
             {
                 LastPoint = previous.LastPoint;
@@ -30,7 +29,7 @@ namespace lib.View.Shapers
             //buffer the current state of the RNG so we can reset it later
             var ranBuffer = Random.state;
             Random.state = _RNGState;
-            while (_progress < Length)
+            for (int i = 0; i < Length; i++)
             {
                 float val1 = Mathf.Cos(Random.Range(0,Mathf.PI)) * (90 - outerAngle);
                 float val2 = Mathf.Cos(Random.Range(0,Mathf.PI)) * (90 - outerAngle);
@@ -39,8 +38,7 @@ namespace lib.View.Shapers
 
                 SplinePoints.Add(thePoint);
                 LastPoint = thePoint;
-                LastDirection = rotation * Vector3.forward;
-                _progress ++;
+                LastDirection = rotation * Vector3.forward;   
             }
 
             Random.state = ranBuffer;

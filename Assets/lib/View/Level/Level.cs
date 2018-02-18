@@ -15,7 +15,13 @@ namespace lib.View.Level
     /// </summary>
     public class Level : MonoBehaviour
     {
-        public BezierSpline.BezierSpline Spline { get; private set; }
+        
+        [SerializeField]
+        private readonly BezierSpline.BezierSpline _spline;
+        public BezierSpline.BezierSpline Spline 
+        {
+            get { return _spline; }
+        }
 
         public LevelStyleData StyleData { get; private set; }
 
@@ -34,12 +40,15 @@ namespace lib.View.Level
         public bool ShowLines = false;
         
         
+
+
         //Methods
         //--------------------------------------------
         
         public Level()
         {
-            Spline = new BezierSpline.BezierSpline();
+            _spline = new BezierSpline.BezierSpline();
+            
         }
 
         // initialize self
@@ -64,7 +73,6 @@ namespace lib.View.Level
 
         public void OnNodeChangedLength(LevelNodeController nodeController)
         {
-            
             //rebuild the parts of the spline points which are necessary
             var listNode = World.Instance.LevelController.CurrentListNode.List.Find(nodeController);
             Debug.Assert(listNode != null, "node is not in List!");
@@ -79,7 +87,7 @@ namespace lib.View.Level
             }
             var currentPoints = Spline.Points;
             //take the unchanged points
-            var unchangedPoints = currentPoints.GetRange(0, accumulator - 1);
+            var unchangedPoints = currentPoints.GetRange(0, accumulator);
             
             // now we build the new pointslist
             var newPoints = new List<Vector3>();
@@ -87,6 +95,7 @@ namespace lib.View.Level
             iterator = listNode;
             while (iterator != null)
             {
+               iterator.Value.LevelNode.Shaper.Start = iterator.Value.LevelNode.Offset;
                 // it does not matter if previous is null because the only shaper that should logically be able to receive
                 // a null value at this point is the default shaper and it doesn't care
                iterator.Value.LevelNode.Shaper.UpdateSplinePoints(
@@ -97,8 +106,15 @@ namespace lib.View.Level
                 newPoints.AddRange(iterator.Value.LevelNode.Shaper.SplinePoints);
                 iterator = iterator.Next;
             }
-
             Spline.Points = newPoints;
+            
+            //invalidate all meshes because previous meshes can be dependant on later shapers
+            iterator = listNode.List.First;
+            while (iterator != null)
+            {
+                iterator.Value.LevelNode.OnPreviousNodeChangedLength(nodeController);
+                iterator = iterator.Next;
+            }
         }
 
         public void RebuildSplinePoints()
@@ -139,13 +155,20 @@ namespace lib.View.Level
                     Gizmos.DrawLine(Spline.RawPoints[i], Spline.RawPoints[i + 1]);
                 }
 
-            if(ShowPoints)
+            if (ShowPoints)
+            {
+                int counter = 1;
+                var previous = Vector3.zero;
                 for (int i = 0; i < Spline.Points.Count; i++)
                 {
                     Gizmos.color = Color.magenta;
-                    Gizmos.DrawWireCube(Spline.Points[i], Vector3.one);
+                    if (Spline.Points[i] == previous) counter++;
+                    else counter = 1;
+                    previous = Spline.Points[i];
+                    Gizmos.DrawWireCube(Spline.Points[i], Vector3.one * counter);
                 }
-            
+            }
+
             if(ShowRawPoints)
                 for (int i = 0; i < Spline.RawPoints.Count; i++)
                 {

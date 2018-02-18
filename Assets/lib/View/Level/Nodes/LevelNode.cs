@@ -78,7 +78,7 @@ namespace lib.View.Level.Nodes
 			var progress = World.Instance.LevelController.Camera.Progress;
 
 			//generate the geometry
-			if (Length > _loadedDistance)
+			if (Length > _loadedDistance && (_chunks.Count == 0 || _chunks.Last().CouldBeVisible()))
 			{
 				for (int i = _loadedDistance; i < Length; i+= ChunkLength)
 				{
@@ -93,17 +93,37 @@ namespace lib.View.Level.Nodes
 			}
 		}
 
-		
+		public void OnPreviousNodeChangedLength(LevelNodeController controller)
+		{
+			Invalidate();
+		}
 
+		public void Invalidate()
+		{
+			for (int i = 0; i < _chunks.Count; i++)
+			{
+				Destroy(_chunks[i].gameObject);
+			}
+			_chunks = new List<LevelNodeChunk>();
+			_loadedDistance = 0;
+		}
+
+		public bool CouldBeVisible()
+		{
+			var progress = World.Instance.LevelController.Camera.Progress;
+			if (progress > Offset && progress < Offset + Length) return true;
+			if (_level.Spline.EstimateDistanceOnSpline(progress, Offset) < RenderSettings.fogEndDistance) return true;
+			if (_level.Spline.EstimateDistanceOnSpline(progress, Offset+Length) < RenderSettings.fogEndDistance) return true;
+			return false;
+		}
+		
 		protected virtual LevelNodeChunk LoadChunk(int offset, int length)
 		{
 			GameObject chunkGameObject = new GameObject("Level Node Chunk");
 			var levelNodeChunk = chunkGameObject.AddComponent<LevelNodeChunk>();
 			levelNodeChunk.Initialize();
 
-			IShaper previous = Controller.Previous.LevelNode.Shaper;
-
-			var mesh = Shaper.GetMesh(_level.Spline, offset == Offset?previous:_shaper, offset, length);
+			var mesh = Shaper.GetMesh(_level.Spline, GetPreviousShaper(offset), offset, length);
 			
 			levelNodeChunk.Skin(mesh,_level.StyleData);
 			levelNodeChunk.Length = length;
@@ -115,6 +135,9 @@ namespace lib.View.Level.Nodes
 			return levelNodeChunk;
 		}
 
-		
+		private IShaper GetPreviousShaper(int offset)
+		{
+			return Offset == offset ? Controller.Previous.LevelNode.Shaper : Shaper;
+		}
 	}
 }

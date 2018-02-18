@@ -42,6 +42,7 @@ namespace lib.System.Level
 			set
 			{
 				_length = value;
+				_levelNode.Shaper.Start = Offset;
 				OnLengthChanged(this);
 			}
 		}
@@ -79,14 +80,14 @@ namespace lib.System.Level
 			get { return _levelNode; }
 		}
 
+		
 		//events
 		//---------------------------------------------
 		
 		public delegate void LevelNodeControllerEvent(LevelNodeController sourceNode);
 
-		public event LevelNodeControllerEvent OnFinished = node=>{};
-		public event LevelNodeControllerEvent OnLengthChanged = node=>{};
-
+		public event LevelNodeControllerEvent OnFinished;
+		public event LevelNodeControllerEvent OnLengthChanged;
 		
 		//Methods
 		//---------------------------------------------
@@ -94,26 +95,29 @@ namespace lib.System.Level
 		{
 			Previous = null;
 			_step = null;
-			Length = 0;
+			_length = 0;
 			_levelNode = World.Instance.Level.CreateLevelNode<DefaultNode>(this);
+			OnLengthChanged += _levelNode.OnPreviousNodeChangedLength;
 		}
 
 		public void Update()
 		{
-//			if (Length < 10 && 
-//			    World.Instance.Level.Spline.EstimateDistanceOnSpline(World.Instance.LevelController.Camera.Progress, Offset + Length) <
-//			    RenderSettings.fogEndDistance)
-//			{
-//				Length++;
-//			}
-			LevelNode.Tick();
+			if (LevelNode.CouldBeVisible())
+			{
+				LevelNode.gameObject.SetActive(true);
+				LevelNode.Tick();
+			}
+			else
+			{
+				LevelNode.gameObject.SetActive(false);
+			}
 		}
 
 		public LevelNodeController(LevelNodeController previous, Scenario.IScenarioStep step)
 		{
 			Previous = previous;
 			_step = step;
-			Length = step.DefaultLength;
+			_length = step.DefaultLength;
 
 			//instantiate the corresponding LevelNode for the step by calling Level's templated method via reflection
 			Type type = ScenarioStepToLevelNodeTypeDictionary[step.GetType()];
@@ -121,8 +125,6 @@ namespace lib.System.Level
 														// ReSharper disable once PossibleNullReferenceException
 			var genericMethod = typeof(View.Level.Level).GetMethod("CreateLevelNode").MakeGenericMethod(type);
 			_levelNode = (LevelNode)genericMethod.Invoke(World.Instance.Level, new object[]{this});
-			
-			
 		}
 
 		/// <summary>

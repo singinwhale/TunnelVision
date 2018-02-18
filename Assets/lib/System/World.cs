@@ -14,16 +14,21 @@ namespace lib.System
     {
         // properties
         //----------------------------------
-        
-        public LevelController LevelController { get; private set; }
 
-        
-        
+        public LevelController LevelController
+        {
+            get { return _levelController; }
+            private set { _levelController = value; }
+        }
+
+
         public String ProcessID { get; set; }
         public String ScenarioID { get; set; }
 
-        private static World _instance; 
+        [SerializeField] private static World _instance;
         
+        [SerializeField] private LevelController _levelController;
+
         public View.Level.Level Level
         {
             get { return LevelController.Level; }

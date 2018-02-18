@@ -25,7 +25,7 @@ namespace lib.View.Shapers
         
         public abstract void UpdateSplinePoints(IShaper previous, int length);
 
-	    public Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previus, int offset, int length)
+	    public Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length)
 	    {
 		    Debug.Assert(offset+length <= spline.Length,"Trying to generate mesh that is longer than the spline it is based on! "+(offset+length)+" > "+spline.Length);
 	        
@@ -39,7 +39,7 @@ namespace lib.View.Shapers
 			var meshResolutionNormal = Config.Instance.Global.Level.Mesh.Resolution.Normal;
 			var radius = Config.Instance.Global.Level.Mesh.Radius;
 			//we have to save our old normal so we can use that as a second vector for our normal calculation
-			Vector3 oldNormal = previus.LastNormal;
+			Vector3 oldNormal = previous.LastNormal;
 			for (int i = 0; i < length; i++)
 			{
 				for (int x = 0; x <= meshResolutionParallel; x++)
@@ -52,10 +52,10 @@ namespace lib.View.Shapers
 					//for the first ring we have to use the last shapers values
 					if (i == 0 && x == 0)
 					{
-						oldNormal = previus.LastNormal;
-						normal = previus.LastNormal;
-						center = previus.LastPoint;
-						tangent = previus.LastDirection;
+						oldNormal = previous.LastNormal;
+						normal = previous.LastNormal;
+						center = previous.LastPoint;
+						tangent = previous.LastDirection;
 					}
 					else
 					{
@@ -82,6 +82,10 @@ namespace lib.View.Shapers
 
 					Debug.Assert(Vector3.Cross(normal,tangent) != Vector3.zero, "Tangent and Normal are parallel. something went wrong when calculating the normal.");
 					Debug.Assert(tangent != Vector3.zero, "Tangent is zero! Do you have a duplicate pont in the spline?");
+					if (Vector3.Cross(normal, tangent) == Vector3.zero)
+					{
+						Vector3.Cross(normal, tangent);
+					}
 					
 					//Generate tube segment. We need to overlap the first and the last vertices because we need UV 0 and 1 on the same spot
 					for (int n = 0; n <= meshResolutionNormal; n++)

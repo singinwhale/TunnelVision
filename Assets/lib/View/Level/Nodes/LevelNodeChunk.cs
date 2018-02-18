@@ -1,4 +1,5 @@
 ﻿using lib.Data.Config;
+using lib.System;
 using UnityEngine;
 
 namespace lib.View.Level.Nodes
@@ -11,8 +12,32 @@ namespace lib.View.Level.Nodes
     {
         protected MeshFilter _meshFilter;
         protected MeshRenderer _meshRenderer;
+        [SerializeField]
+        private int _offset;
+        [SerializeField]
+        private int _length;
 
-        
+
+        public int Length
+        {
+            get { return _length; }
+            set
+            {
+                _length = value; 
+                _meshRenderer.material.SetFloat("Length",value);
+            }
+        }
+
+        public int Offset
+        {
+            get { return _offset; }
+            set
+            {
+                _offset = value; 
+                _meshRenderer.material.SetFloat("Offset",value);
+            }
+        }
+
         public Material Material
         {
             get { return _meshRenderer.sharedMaterial; }
@@ -23,9 +48,10 @@ namespace lib.View.Level.Nodes
         {
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
-			
-            var m = Resources.Load<Material>(Config.Instance.Global.Level.Material.Path);
-            _meshRenderer.sharedMaterial = m;
+
+            var materialPath = Config.Instance.Global.Level.Mesh.Material.Path;
+            var m = Resources.Load<Material>(materialPath);
+            _meshRenderer.material = m;
         }
 
         public void Skin(Mesh mesh, LevelStyleData styleData)
@@ -33,6 +59,33 @@ namespace lib.View.Level.Nodes
             _meshFilter.sharedMesh = mesh;
         }
         
+        /// <summary>
+        /// A Node can be visible if the distance to the camera is less than the fog distance
+        /// </summary>
+        /// <returns></returns>
+        public bool CouldBeVisible()
+        {
+            var theCamera = World.Instance.LevelController.Camera;
+            var cameraProgress = theCamera.Progress;
+            var spline = World.Instance.LevelController.Level.Spline;
+            
+            //were inside it
+            if (cameraProgress > Offset &&
+                cameraProgress < Offset + Length) 
+                return true;
+            //not hidden by fog anymore
+            if (
+                (
+                    spline.EstimateDistanceOnSpline(cameraProgress, Offset) <
+                        RenderSettings.fogEndDistance ||
+                    spline.EstimateDistanceOnSpline(cameraProgress, Offset+Length) <
+                        RenderSettings.fogEndDistance
+                )
+            )
+                return true;
+            
+            return false;
+        }
         
 
     }

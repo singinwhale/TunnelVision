@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: TunnelMaterial
-  m_Shader: {fileID: 4800000, guid: 630244e46b2fce349a0200b491197b36, type: 3}
-  m_ShaderKeywords: 
+  m_Name: FoggySkybox
+  m_Shader: {fileID: 4800000, guid: 60285be91a109e44c9c73129109cdbaa, type: 3}
+  m_ShaderKeywords: _SUNDISK_SIMPLE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -54,11 +54,17 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Tex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _AtmosphereThickness: 0
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _Exposure: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -66,22 +72,19 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _Rotation: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _SunDisk: 1
+    - _SunSize: 0
+    - _SunSizeConvergence: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _backgroundColor: 0
-    - _frequency: 94.24
     - _intensity: 2.93
-    - _length: 1
-    - _offset: 0
-    - _rotationSpeed: 1.68
-    - _sharpness: 14.96
-    - _thickness: 0
-    - _u: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _backgroundColor: {r: 0.11764706, g: 0.01966246, b: 0, a: 0}
-    - _foregroundColor: {r: 0.328, g: 0.10958401, b: 0.06461601, a: 0}
+    - _GroundColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SkyTint: {r: 1, g: 1, b: 1, a: 1}
+    - _Tint: {r: 1, g: 0.29803923, b: 0, a: 0.99607843}

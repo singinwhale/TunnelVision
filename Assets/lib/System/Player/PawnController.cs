@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using lib.Data.Config;
+using UnityEngine;
 
 namespace lib.System.Player
 {
@@ -10,8 +11,10 @@ namespace lib.System.Player
 		public float Range;
 
 		// Use this for initialization
-		void Start () {
-		
+		void Start ()
+		{
+			Speed = Config.Instance.Global.Player.Pawn.Speed;
+			Range = Config.Instance.Global.Level.Mesh.Radius - 0.5f;
 		}
 	
 		// Update is called once per frame

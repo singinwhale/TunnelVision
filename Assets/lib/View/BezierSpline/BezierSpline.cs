@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Assertions.Comparers;
 
 namespace lib.View.BezierSpline
 {
     public class BezierSpline
     {
         private List<Vector3> _pointsList = new List<Vector3>();
-        private List<Vector3> _givenPoints;
+        private List<Vector3> _givenPoints = new List<Vector3>();
 
         private readonly BezierCurve _curve = new BezierCurve();
 
@@ -33,13 +35,13 @@ namespace lib.View.BezierSpline
         {
             get
             {
-                return _pointsList.Count - 1 /*- float.Epsilon*/;
+                return _givenPoints.Count - 1 /*- float.Epsilon*/;
             }
         }
 
-        public ReadOnlyCollection<Vector3> RawPoints
+        public List<Vector3> RawPoints
         {
-            get { return _pointsList.AsReadOnly(); }
+            get { return _pointsList; }
         }
 
         public Vector3 this[float u]
@@ -52,32 +54,69 @@ namespace lib.View.BezierSpline
 
         public Vector3 Evaluate(float u)
         {
-            u = Mathf.Clamp(u, 0, Length - float.Epsilon);
-            
+            u = ToInternalU(u);
             _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
             
             return _curve[GetTForU(u)]; //[0,1] normalized value from u fraction
         }
 
         public Vector3 GetDerivative(float u, int order)
-        {
-            u = Mathf.Clamp(u, 0, Length - float.Epsilon);
-
+        {   
+            u = ToInternalU(u);
             _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
 
             return _curve.GetDerivative(GetTForU(u),order); //[0,1] normalized value from u fraction
         }
-
+        
 	    public Vector3 GetNormal(float u)
 	    {
-
-		    u = Mathf.Clamp(u, 0, Length - float.Epsilon);
-
+	        u = ToInternalU(u);
 		    _curve.Points = _pointsList.GetRange(GetCurveFirstPointIndexForU(u), CurveOrder);
 
 			return _curve.GetNormal(GetTForU(u));
 	    }
 
+        /// <summary>
+        /// Tries to estimate the distance between two points on the spline along the spline.
+        /// </summary>
+        /// <param name="from">From</param>
+        /// <param name="to">To</param>
+        /// <param name="optimistic">Whether the estimate should be optimistic or not.
+        /// Optimistic gives the shortest distance. Pessimistic the longest</param>
+        /// <returns></returns>
+        [Pure]
+        public float EstimateDistanceOnSpline(float from, float to, bool optimistic = false)
+        {
+            float estimate = 0;
+            // make sure from is less than to
+            if (from > to)
+            {
+                float temp = to;
+                to = from;
+                from = temp;
+            }
+            if (Mathf.Abs(to - from) <= 1)
+            {
+                return (Evaluate(to) - Evaluate(from)).magnitude;
+            }
+            else if (!optimistic || to - from < CurveOrder)
+            {   
+                for (int i = (int)Mathf.Max(1,from + 1); i < Mathf.Min(RawPoints.Count,to); i++)
+                {
+                    estimate += (RawPoints[i] - RawPoints[i - 1]).magnitude;
+                }
+            }
+            else
+            {
+                int stepsize = CurveOrder - 1;
+                for (int i = (int) from + stepsize; i <= to; i++)
+                {
+                    estimate += (Evaluate(i) - Evaluate(i - stepsize)).magnitude;
+                }
+            }
+
+            return estimate;
+        }
 
 		private static List<Vector3> CalculateSharedPoints(List<Vector3> rawPoints)
         {
@@ -106,7 +145,15 @@ namespace lib.View.BezierSpline
 	        return curvablePoints;
         }
 
+        [Pure]
+        private float ToInternalU(float u)
+        {
+            Mathf.Clamp(u, 0, Length - float.Epsilon);
+            //convert from givenPoints u to rawPoints u;
+            return u * ((float)_pointsList.Count / _givenPoints.Count);
+        }
 
+        [Pure]
 	    private int GetCurveFirstPointIndexForU(float u)
 	    {
 		    int i = (int)u;
@@ -116,6 +163,7 @@ namespace lib.View.BezierSpline
 		    return i;
 	    }
 
+        [Pure]
 		private float GetTForU(float u)
         {
             int firstPointIndex = GetCurveFirstPointIndexForU(u);
@@ -124,5 +172,6 @@ namespace lib.View.BezierSpline
             return t;
         }
 
+        
     }
 }

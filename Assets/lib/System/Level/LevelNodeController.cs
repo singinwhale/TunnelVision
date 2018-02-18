@@ -21,47 +21,108 @@ namespace lib.System.Level
 		/// <summary>The View part</summary>
 		private LevelNode _levelNode;
 
+		private int _length;
+
 		/// <summary>
 		/// Maps a Model class to their corresponding View Class. In this case it maps Steps to Nodes
 		/// </summary>
-		public static Dictionary<Type, Type> ScenarioStepToLevelNodeTypeDictionary = new Dictionary<Type, Type>
+		public readonly static Dictionary<Type, Type> ScenarioStepToLevelNodeTypeDictionary = new Dictionary<Type, Type>
 		{
 			{typeof(Scenario.TextStep), typeof(TextNode)},
 			{typeof(Scenario.NodeStep), typeof(PlayerTaskNode)}
 		};
 
-		
+
 		//properties
 		//---------------------------------------------
-		
+
+		public int Length
+		{
+			get { return _length; }
+			set
+			{
+				_length = value;
+				OnLengthChanged(this);
+			}
+		}
+
+		/// <summary>
+		/// The Staring point of this 
+		/// </summary>
+		public int Offset
+		{
+			get
+			{
+				int offset = 0;
+				var prev = Previous;
+				while (prev != null)
+				{
+					offset += prev.Length;
+					prev = prev.Previous;
+				}
+
+				return offset;
+			}
+		}
+
+		public LevelNodeController Previous { get; private set; }
+
+		/// <see cref="_step"/>
+		public Scenario.IScenarioStep Step
+		{
+			get { return _step; }
+		}
+
+		/// <summary>The View part</summary>
+		public LevelNode LevelNode
+		{
+			get { return _levelNode; }
+		}
+
 		//events
 		//---------------------------------------------
 		
 		public delegate void LevelNodeControllerEvent(LevelNodeController sourceNode);
 
 		public event LevelNodeControllerEvent OnFinished = node=>{};
+		public event LevelNodeControllerEvent OnLengthChanged = node=>{};
 
 		
 		//Methods
 		//---------------------------------------------
-		public LevelNodeController(Scenario.IScenarioStep step)
+		public LevelNodeController()
 		{
-			_step = step;
-
-			//instantiate the corresponding LevelNode for the step by calling Level's templated method
-			Type type = ScenarioStepToLevelNodeTypeDictionary[step.GetType()];
-			Debug.Assert(type.IsSubclassOf(typeof(LevelNode)));
-														// ReSharper disable once PossibleNullReferenceException
-			var genericMethod = typeof(View.Level.Level).GetMethod("CreateLevelNode").MakeGenericMethod(type);
-			_levelNode = (LevelNode)genericMethod.Invoke(World.Instance.Level, new object[]{step,0.0f,100.0f});
-			
-			
+			Previous = null;
+			_step = null;
+			Length = 0;
+			_levelNode = World.Instance.Level.CreateLevelNode<DefaultNode>(this);
 		}
 
 		public void Update()
 		{
-			//when we are done here we can tell everyone who is listening
-			OnFinished(this);
+//			if (Length < 10 && 
+//			    World.Instance.Level.Spline.EstimateDistanceOnSpline(World.Instance.LevelController.Camera.Progress, Offset + Length) <
+//			    RenderSettings.fogEndDistance)
+//			{
+//				Length++;
+//			}
+			LevelNode.Tick();
+		}
+
+		public LevelNodeController(LevelNodeController previous, Scenario.IScenarioStep step)
+		{
+			Previous = previous;
+			_step = step;
+			Length = step.DefaultLength;
+
+			//instantiate the corresponding LevelNode for the step by calling Level's templated method via reflection
+			Type type = ScenarioStepToLevelNodeTypeDictionary[step.GetType()];
+			Debug.Assert(type.IsSubclassOf(typeof(LevelNode)));
+														// ReSharper disable once PossibleNullReferenceException
+			var genericMethod = typeof(View.Level.Level).GetMethod("CreateLevelNode").MakeGenericMethod(type);
+			_levelNode = (LevelNode)genericMethod.Invoke(World.Instance.Level, new object[]{this});
+			
+			
 		}
 
 		/// <summary>

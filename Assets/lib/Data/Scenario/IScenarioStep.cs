@@ -6,6 +6,7 @@ namespace lib.Data.Scenario
 	{
 		public interface IScenarioStep
 		{
+			int DefaultLength { get; }
 		}
 	}
 }

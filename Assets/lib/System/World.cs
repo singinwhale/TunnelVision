@@ -21,6 +21,8 @@ namespace lib.System
         
         public String ProcessID { get; set; }
         public String ScenarioID { get; set; }
+
+        private static World _instance; 
         
         public View.Level.Level Level
         {
@@ -35,9 +37,12 @@ namespace lib.System
         {
             get
             {
-                var theWorld = FindObjectOfType<World>();
-                Debug.Assert(theWorld != null, "World is missing!");
-                return theWorld;
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<World>();
+                }
+                Debug.Assert(_instance != null, "World is missing!");
+                return _instance;
             }
         }
         

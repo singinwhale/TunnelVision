@@ -31,5 +31,8 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
+/WindowsBuild
+/AndroidBuild
 *.apk
 *.unitypackage
+*.exe

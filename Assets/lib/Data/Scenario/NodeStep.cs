@@ -1,7 +1,6 @@
-﻿using System;
+﻿
 using lib.Data.Node;
-using lib.System.Level.Tasks;
-using lib.View.Level.Nodes;
+using UnityEngine;
 
 namespace lib.Data.Scenario
 {
@@ -14,7 +13,10 @@ namespace lib.Data.Scenario
 			public NodeStep(NodeGraph.Node decoratedObject)
 			{
 				DecoratedNode = decoratedObject;
+				DefaultLength = (int)RenderSettings.fogEndDistance/5;
 			}
+
+			public int DefaultLength { get; private set; }
 		}
 	}
 }

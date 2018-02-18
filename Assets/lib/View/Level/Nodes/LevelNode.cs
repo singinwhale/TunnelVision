@@ -3,6 +3,7 @@ using System.Linq;
 using lib.Data.Scenario;
 using lib.Data.Xml;
 using lib.System;
+using lib.System.Level;
 using lib.View.Shapers;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace lib.View.Level.Nodes
 	/// A part of a level. A level node consists of multiple chunks and is lengthened as needed, pushing back subsequent
 	/// nodes.
 	/// </summary>
-	public abstract class LevelNode : MonoBehaviour
+	public  abstract class LevelNode : MonoBehaviour
 	{
 		/// <summary>
 		/// The Class that defines the appearance of this node. Should be set by child classes
@@ -29,44 +30,44 @@ namespace lib.View.Level.Nodes
 		/// </summary>
 		protected List<LevelNodeChunk> _chunks;
 
-		private float _offset;
-		private float _length;
+		private int _loadedDistance = 0;
 
-		private float _loadedDistance = 0;
+		private const int ChunkLength = 1;
+		
+		public LevelNodeController Controller { get; set; }
 		
 		/// <summary>
 		/// The Point u on the spline where the node starts
 		/// </summary>
-		public float Offset
+		public int Offset
 		{
-			get { return _offset; }
-			protected set
-			{
-				_offset = value;
-				_shaper.Start = value;
-			}
+			get { return Controller.Offset; }
 		}
 
 		/// <summary>
 		/// The length on the spline until the node ends
 		/// </summary>
-		public float Length
+		public int Length
 		{
-			get { return _length; }
-			protected set
-			{
-				_length = value;
-				_shaper.Length = value;
-			}
+			get { return Controller.Length; }
 		}
 
-		public virtual void Initialize(Level level, Scenario.IScenarioStep step, float offset, float length)
+		/// <summary>
+		/// The Class that defines the appearance of this node. Should be set by child classes
+		/// </summary>
+		public IShaper Shaper
+		{
+			get { return _shaper; }
+		}
+
+
+		public virtual void Initialize(Level level, LevelNodeController controller)
 		{
 			_level = level;
-			Offset = offset;
-			Length = length;
 			_chunks = new List<LevelNodeChunk>();
+			Controller = controller;
 		}
+
 
 		public virtual void OnPlayerEnter()
 		{
@@ -75,56 +76,43 @@ namespace lib.View.Level.Nodes
 		public virtual void Tick()
 		{
 			var progress = World.Instance.LevelController.Camera.Progress;
-			
+
 			//generate the geometry
-			if (_length > _loadedDistance)
+			if (Length > _loadedDistance)
 			{
-				LoadChunk(_offset + _loadedDistance, _length - _loadedDistance);
+				for (int i = _loadedDistance; i < Length; i+= ChunkLength)
+				{
+					_chunks.Add(LoadChunk(Offset + i,ChunkLength));
+				}
+				_loadedDistance = Length;
 			}
 			
-			//make sure the game objects are visible if necessary
-			gameObject.SetActive(CouldBeVisible());
+			foreach (var chunk in _chunks)
+			{
+				chunk.gameObject.SetActive(chunk.CouldBeVisible());
+			}
 		}
 
-		/// <summary>
-		/// A Node can be visible if the distance to the camera is less than the fog distance
-		/// </summary>
-		/// <returns></returns>
-		public bool CouldBeVisible()
-		{
-			if ((World.Instance.LevelController.Camera.transform.position - World.Instance.Level.Spline[_offset]).magnitude <
-			    RenderSettings.fogEndDistance) 
-				return true;
-			if (World.Instance.LevelController.Camera.Progress > _offset ||
-			    World.Instance.LevelController.Camera.Progress < _offset + _length) 
-				return true;
-			return false;
-		}
+		
 
-		protected void LoadChunk(float offset, float length)
+		protected virtual LevelNodeChunk LoadChunk(int offset, int length)
 		{
 			GameObject chunkGameObject = new GameObject("Level Node Chunk");
 			var levelNodeChunk = chunkGameObject.AddComponent<LevelNodeChunk>();
 			levelNodeChunk.Initialize();
 
-			IShaper previous;
-			var myIndex = _level.LevelNodes.IndexOfKey(_offset);
-			if (myIndex > 0)
-			{
-				var previousNode = _level.LevelNodes.ElementAt(myIndex - 1).Value;
-				previous = previousNode._shaper;
-			}
-			else // if we are the first
-			{
-				previous = new DefaultShaper();
-			}
+			IShaper previous = Controller.Previous.LevelNode.Shaper;
 
-			var mesh = _shaper.GetMesh(_level.Spline, previous, offset, length);
+			var mesh = Shaper.GetMesh(_level.Spline, offset == Offset?previous:_shaper, offset, length);
 			
 			levelNodeChunk.Skin(mesh,_level.StyleData);
+			levelNodeChunk.Length = length;
+			levelNodeChunk.Offset = offset;
 			
 			//make the gameObject a child of this
 			levelNodeChunk.transform.parent = transform;
+			levelNodeChunk.transform.position = Vector3.zero;
+			return levelNodeChunk;
 		}
 
 		

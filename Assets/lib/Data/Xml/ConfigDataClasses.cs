@@ -24,6 +24,9 @@ namespace lib.Data.Xml
 		public Resolution Resolution { get; set; }
 		[XmlElement(ElementName = "Radius")]
 		public float Radius { get; set; }
+		
+		[XmlElement(ElementName = "Material")]
+		public Material Material { get; set; }
 	}
 
 	[XmlRoot(ElementName = "Obstacles")]
@@ -48,8 +51,6 @@ namespace lib.Data.Xml
 		[XmlElement(ElementName = "Obstacles")]
 		public Obstacles Obstacles { get; set; }
 
-		[XmlElement(ElementName = "Material")]
-		public Material Material { get; set; }
 	}
 
 	[XmlRoot(ElementName = "Camera")]

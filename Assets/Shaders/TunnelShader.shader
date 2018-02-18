@@ -63,8 +63,8 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				// sample the texture
-				float weight = clamp((sin(i.uv.y*_frequency + i.uv.x*_length*_rotationSpeed)*0.5+0.5)*_sharpness,0,1);
+			
+				float weight = clamp((sin(_offset + i.uv.y*_frequency + i.uv.x*_length*_rotationSpeed)*0.5+0.5)*_sharpness,0,1);
 				fixed4 col = lerp(_foregroundColor, _backgroundColor, weight);
 				//col.w = 0;
 				// apply fog

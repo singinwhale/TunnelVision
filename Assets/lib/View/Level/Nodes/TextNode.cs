@@ -1,5 +1,6 @@
 ﻿using System;
 using lib.Data.Scenario;
+using lib.System.Level;
 using lib.View.Shapers;
 using UnityEngine;
 
@@ -9,15 +10,15 @@ namespace lib.View.Level.Nodes
 	{
 		public String Text { get; protected set; }
 
-		public override void Initialize(Level level, Scenario.IScenarioStep step, float offset, float length)
+		public override void Initialize(Level level, LevelNodeController controller)
 		{
-			Debug.Assert(step is Scenario.TextStep, "Given scenariostep is no TextStep!");
+			Debug.Assert(controller.Step is Scenario.TextStep, "Given scenariostep is no TextStep!");
 			
-			_shaper = new SpiralShaper(offset,length);
+			_shaper = new LinearShaper(controller.Offset, controller.Length);
 			var textMesh = gameObject.AddComponent<TextMesh>();
-			textMesh.text = ((Scenario.TextStep)step).Text;
+			textMesh.text = ((Scenario.TextStep)controller.Step).Text;
 			
-			base.Initialize(level, step, offset, length);
+			base.Initialize(level, controller);
 		}
 
 		public override void OnPlayerEnter()

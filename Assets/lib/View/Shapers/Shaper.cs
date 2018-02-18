@@ -1,33 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using lib.Data.Config;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace lib.View.Shapers
 {
     public abstract class Shaper : IShaper
     {
-        public float Start { get; set; }
-        public float Length { get; set; }
-        public Vector3 LastPoint { get; set; }
-        public Vector3 LastDirection { get; set; }
-        public Vector3 LastNormal { get; set; }
+        public int Start { get; set; }
+        public int Length { get; set; }
+	    
+	    public List<Vector3> SplinePoints { get; protected set; }
+        public Vector3 LastPoint { get; protected set; }
+        public Vector3 LastDirection { get; protected set; }
+        public Vector3 LastNormal { get; protected set; }
 
-	    protected Shaper(float start, float length)
+	    protected Shaper(int start, int length)
 	    {
 		    Start = start;
 		    Length = length;
 	    }
         
-        public abstract void AddShapePointsToSpline(ref BezierSpline.BezierSpline spline, IShaper previous, float length);
+        public abstract void UpdateSplinePoints(IShaper previous, int length);
 
-	    public Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previus, float offset, float length)
+	    public Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previus, int offset, int length)
 	    {
-		    return MakeSplineSkin(spline, Start + offset, length, previus.LastNormal);
-	    }
-
-	    protected static Mesh MakeSplineSkin(BezierSpline.BezierSpline spline, float start, float length, Vector3 startNormal)
-        {
-	        Debug.Assert(start+length < spline.Length,"Trying to generate mesh that is longer than the spline it is based on!");
+		    Debug.Assert(offset+length <= spline.Length,"Trying to generate mesh that is longer than the spline it is based on! "+(offset+length)+" > "+spline.Length);
 	        
 	        var mesh = new Mesh();
 	        
@@ -39,17 +39,24 @@ namespace lib.View.Shapers
 			var meshResolutionNormal = Config.Instance.Global.Level.Mesh.Resolution.Normal;
 			var radius = Config.Instance.Global.Level.Mesh.Radius;
 			//we have to save our old normal so we can use that as a second vector for our normal calculation
-			Vector3 oldNormal = startNormal;
-			for (int i = 0; i < length/meshResolutionParallel; i++)
+			Vector3 oldNormal = previus.LastNormal;
+			for (int i = 0; i < length; i++)
 			{
-				for (int x = 0; x < meshResolutionParallel; x++)
+				for (int x = 0; x <= meshResolutionParallel; x++)
 				{
-					float u = start + i + ((float) x / meshResolutionParallel);
+					float u = offset + i + ((float) x / meshResolutionParallel);
 					Vector3 center = spline.Evaluate(u);
 					Vector3 tangent = spline.GetDerivative(u, 1);
 					Vector3 normal = spline.GetNormal(u).normalized;
 
-					if (oldNormal == Vector3.zero) oldNormal = normal;
+					//for the first ring we have to use the last shapers values
+					if (i == 0 && x == 0)
+					{
+						oldNormal = previus.LastNormal;
+						normal = previus.LastNormal;
+						center = previus.LastPoint;
+						tangent = previus.LastDirection;
+					}
 					else
 					{
 						// project normal onto tangent plane so the rotation stays somewhat within that plane
@@ -69,6 +76,13 @@ namespace lib.View.Shapers
 						normal = newNormal;
 					}
 
+					LastPoint = center;
+					LastDirection = tangent;
+					LastNormal = normal;
+
+					Debug.Assert(Vector3.Cross(normal,tangent) != Vector3.zero, "Tangent and Normal are parallel. something went wrong when calculating the normal.");
+					Debug.Assert(tangent != Vector3.zero, "Tangent is zero! Do you have a duplicate pont in the spline?");
+					
 					//Generate tube segment. We need to overlap the first and the last vertices because we need UV 0 and 1 on the same spot
 					for (int n = 0; n <= meshResolutionNormal; n++)
 					{
@@ -110,7 +124,8 @@ namespace lib.View.Shapers
 			mesh.uv = UVs.ToArray();
 
 	        return mesh;
-        }
+	    }
+
 	    
 	    
 

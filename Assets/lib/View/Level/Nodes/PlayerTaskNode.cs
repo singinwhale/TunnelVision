@@ -1,14 +1,15 @@
 ﻿using lib.Data.Scenario;
+using lib.System.Level;
 using lib.View.Shapers;
 
 namespace lib.View.Level.Nodes
 {
 	public class PlayerTaskNode : LevelNode
 	{
-		public override void Initialize(Level level, Scenario.IScenarioStep step, float offset, float length)
+		public override void Initialize(Level level, LevelNodeController controller)
 		{
-			_shaper = new SpiralShaper(offset,length);
-			base.Initialize(level, step,offset,length);
+			_shaper = new RandomShaper(controller.Offset, controller.Length);
+			base.Initialize(level, controller);
 		}
 	}
 }

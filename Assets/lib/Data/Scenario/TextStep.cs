@@ -14,7 +14,10 @@ namespace lib.Data.Scenario
 			public TextStep(string text)
 			{
 				Text = text;
+				DefaultLength = 6; // text.Length / 10 * 20;
 			}
+
+			public int DefaultLength { get; private set; }
 		}
 	}
 }

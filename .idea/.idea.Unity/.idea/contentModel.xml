@@ -56,6 +56,7 @@
               <e p="Level.cs" t="Include" />
               <e p="LevelStyleData.cs" t="Include" />
               <e p="Nodes" t="Include">
+                <e p="DefaultNode.cs" t="Include" />
                 <e p="LevelNode.cs" t="Include" />
                 <e p="LevelNodeChunk.cs" t="Include" />
                 <e p="PlayerTaskNode.cs" t="Include" />
@@ -68,8 +69,17 @@
             <e p="Shapers" t="Include">
               <e p="DefaultShaper.cs" t="Include" />
               <e p="IShaper.cs" t="Include" />
+              <e p="LinearShaper.cs" t="Include" />
+              <e p="RandomShaper.cs" t="Include" />
               <e p="Shaper.cs" t="Include" />
               <e p="SpiralShaper.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Plugins" t="Include">
+          <e p="Editor" t="Include">
+            <e p="JetBrains" t="Include">
+              <e p="Unity3DRider.cs" t="Include" />
             </e>
           </e>
         </e>
@@ -250,6 +260,7 @@
           </e>
         </e>
         <e p="Shaders" t="Include">
+          <e p="FogSkybox.shader" t="Include" />
           <e p="TunnelShader.shader" t="Include" />
         </e>
       </e>

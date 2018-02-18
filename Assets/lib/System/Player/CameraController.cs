@@ -25,6 +25,7 @@ namespace lib.System.Player
 		{
 			_progress = 1;
 			_progressSpeed = Config.Instance.Global.Player.Camera.Speed;
+			_speed = Config.Instance.Global.Player.Camera.Speed;
 			
 		}
 	

@@ -2,7 +2,7 @@
 <Config>
 	<Level>
 		<Mesh>
-			<Resolution parallel="4" normal="24"/>
+			<Resolution parallel="32" normal="24"/>
 			<Radius>5.0</Radius>
 			<Material path="Materials/TunnelMaterial"/>
 		</Mesh>

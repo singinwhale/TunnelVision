@@ -63,7 +63,7 @@ namespace lib.View.Shapers
 						Plane p = new Plane(tangent,Vector3.zero);
 
 						// rotate toward target normal
-						Vector3 newNormal = Vector3.RotateTowards(oldNormal, normal, Mathf.Deg2Rad * 10.0f, 0);
+						Vector3 newNormal = Vector3.RotateTowards(oldNormal, normal, Mathf.Deg2Rad * 10.0f/meshResolutionParallel, 0);
 						//then rotate to plane
 						newNormal = Vector3.RotateTowards(newNormal, p.ClosestPointOnPlane(oldNormal), Mathf.Deg2Rad* 10.0f, 0);
 						
@@ -74,11 +74,12 @@ namespace lib.View.Shapers
 						}
 						oldNormal = newNormal;
 						normal = newNormal;
+						
+						LastPoint = center;
+						LastDirection = tangent;
+						LastNormal = normal;
 					}
 
-					LastPoint = center;
-					LastDirection = tangent;
-					LastNormal = normal;
 
 					Debug.Assert(Vector3.Cross(normal,tangent) != Vector3.zero, "Tangent and Normal are parallel. something went wrong when calculating the normal.");
 					Debug.Assert(tangent != Vector3.zero, "Tangent is zero! Do you have a duplicate pont in the spline?");

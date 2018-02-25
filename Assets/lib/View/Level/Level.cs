@@ -51,18 +51,6 @@ namespace lib.View.Level
             
         }
 
-        // initialize self
-        void Awake()
-        {
-        }
-
-        // communicate with other gameObjects
-        void Start()
-        {
-            //load first node which hopefully already exists
-            
-        }
-
         /// <summary>
         /// Tick is independant of Unity's Update method so we have more control
         /// </summary>
@@ -138,7 +126,7 @@ namespace lib.View.Level
         // ReSharper disable once UnusedMember.Global
         public TLevelNodeSubclass CreateLevelNode<TLevelNodeSubclass>(LevelNodeController controller) where TLevelNodeSubclass : LevelNode
         {
-            var levelNodeGameObject = new GameObject();
+            var levelNodeGameObject = new GameObject("LevelNode "+typeof(TLevelNodeSubclass).Name);
             TLevelNodeSubclass theNode = levelNodeGameObject.AddComponent<TLevelNodeSubclass>();
             theNode.Initialize(this, controller);
             return theNode;

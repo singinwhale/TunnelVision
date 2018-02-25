@@ -14,6 +14,7 @@ namespace lib.View.Shapers
 
         public override void UpdateSplinePoints(IShaper previous, int length)
         {
+            LastPoint = previous.LastPoint;
             SplinePoints = new List<Vector3>(length);
             for (int i = 1; i <= length; i++)
             {

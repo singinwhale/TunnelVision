@@ -12,6 +12,9 @@ namespace lib.View.BezierSpline
 
         private List<Vector3> pointsList;
 
+        /// <summary> Stores the Casteljau Matrizes for every curve Order. Filled lazyly. </summary>
+        private Dictionary<int, Matrix<double>> _matrixCache = new Dictionary<int, Matrix<double>>();
+
         public List<Vector3> Points
         {
             get
@@ -81,8 +84,9 @@ namespace lib.View.BezierSpline
         /// </summary>
         /// <param name="numPoints">Number of points in this bezier curve</param>
         /// <returns>Returns a sparse matrix of the order numPoints X numPoints</returns>
-        private static Matrix<double> GetCasteljauMatrix(int numPoints)
+        private Matrix<double> GetCasteljauMatrix(int numPoints)
         {
+            if (_matrixCache.ContainsKey(numPoints)) return _matrixCache[numPoints];
             Matrix<double> m = new MathNet.Numerics.LinearAlgebra.Double.SparseMatrix(numPoints, numPoints);
 
             int n = numPoints-1;
@@ -96,6 +100,8 @@ namespace lib.View.BezierSpline
                         SpecialFunctions.Binomial(n, i);
                 }
             }
+
+            _matrixCache[numPoints] = m;
             return m;
         }
 

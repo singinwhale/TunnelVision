@@ -9,7 +9,7 @@ namespace lib.Data.Node
 		{
 
 
-			public List<Node> _nextNodes = new List<Node>();
+			private List<Node> _nextNodes = new List<Node>();
 
 			public List<Node> NextNodes{get { return _nextNodes; }}
 

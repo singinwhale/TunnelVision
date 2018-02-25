@@ -10,8 +10,8 @@ namespace lib.View.Level.Nodes
     /// </summary>
     public class LevelNodeChunk : MonoBehaviour
     {
-        protected MeshFilter _meshFilter;
-        protected MeshRenderer _meshRenderer;
+        private MeshFilter _meshFilter;
+        private MeshRenderer _meshRenderer;
         [SerializeField]
         private int _offset;
         [SerializeField]
@@ -40,7 +40,7 @@ namespace lib.View.Level.Nodes
 
         public Material Material
         {
-            get { return _meshRenderer.sharedMaterial; }
+            get { return _meshRenderer.material; }
         }
         
 
@@ -80,6 +80,15 @@ namespace lib.View.Level.Nodes
                         RenderSettings.fogEndDistance ||
                     spline.EstimateDistanceOnSpline(cameraProgress, Offset+Length) <
                         RenderSettings.fogEndDistance
+                )
+            )
+                return true;
+            if (
+                (
+                    (theCamera.transform.position - spline.Evaluate(Offset)).magnitude <
+                    RenderSettings.fogEndDistance ||
+                    (theCamera.transform.position - spline.Evaluate(Offset+Length)).magnitude <
+                    RenderSettings.fogEndDistance
                 )
             )
                 return true;

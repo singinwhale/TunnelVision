@@ -9,8 +9,6 @@ namespace lib.View.Level.Nodes
 {
 	public class TextNode : LevelNode
 	{
-		public String Text { get; protected set; }
-
 		public override void Initialize(Level level, LevelNodeController controller)
 		{
 			Debug.Assert(controller.Step is Scenario.TextStep, "Given scenariostep is no TextStep!");

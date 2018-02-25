@@ -20,19 +20,18 @@ namespace lib.View.Shapers
         public override void UpdateSplinePoints(IShaper previous, int length)
         {
             SplinePoints = new List<Vector3>();
-            if(SplinePoints.Count ==0)
-            {
-                LastPoint = previous.LastPoint;
-                LastDirection = previous.LastDirection;   
-            }
+            
+            LastPoint = previous.LastPoint;
+            LastDirection = previous.LastDirection;   
+            
 
             //buffer the current state of the RNG so we can reset it later
             var ranBuffer = Random.state;
             Random.state = _RNGState;
             for (int i = 0; i < Length; i++)
             {
-                float val1 = Mathf.Cos(Random.Range(0,Mathf.PI)) * (90 - outerAngle);
-                float val2 = Mathf.Cos(Random.Range(0,Mathf.PI)) * (90 - outerAngle);
+                float val1 = /*Mathf.Cos(Random.Range(0,Mathf.PI))*/ Random.Range(-1,1) * (90 - outerAngle);
+                float val2 = /*Mathf.Cos(Random.Range(0,Mathf.PI))*/ Random.Range(-1,1) * (90 - outerAngle);
                 var rotation = Quaternion.Euler(val1,val2,0) * Quaternion.FromToRotation(Vector3.forward, LastDirection);
                 var thePoint = LastPoint + rotation * Vector3.forward * Spacing;
 

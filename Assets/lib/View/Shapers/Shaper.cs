@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using lib.Data.Config;
+using lib.View.Level.Nodes;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -25,11 +26,11 @@ namespace lib.View.Shapers
         
         public abstract void UpdateSplinePoints(IShaper previous, int length);
 
-	    public Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length)
+	    public LevelNodeChunk.MeshData GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length)
 	    {
 		    Debug.Assert(offset+length <= spline.Length,"Trying to generate mesh that is longer than the spline it is based on! "+(offset+length)+" > "+spline.Length);
-	        
-	        var mesh = new Mesh();
+				        
+	        var mesh = new LevelNodeChunk.MeshData();
 	        
             List<Vector3> vertices = new List<Vector3>();
 			List<int> triangles = new List<int>();
@@ -124,10 +125,10 @@ namespace lib.View.Shapers
 
 			}
 
-			mesh.vertices = vertices.ToArray();
-			mesh.triangles = triangles.ToArray();
-			mesh.uv = UVs.ToArray();
-
+			mesh.Vertices = vertices;
+			mesh.Triangles = triangles;
+			mesh.UVs = UVs;
+			
 	        return mesh;
 	    }
 

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
-using lib.Data.Scenario;
-using lib.Data.Xml;
+using System.Threading;
 using lib.System;
 using lib.System.Level;
 using lib.View.Shapers;
 using UnityEngine;
-
 namespace lib.View.Level.Nodes
 {
 	/// <summary>
@@ -33,6 +32,8 @@ namespace lib.View.Level.Nodes
 		private int _loadedDistance = 0;
 
 		private const int ChunkLength = 1;
+
+		private static Thread _lastThread = null;
 		
 		public LevelNodeController Controller { get; set; }
 		
@@ -123,9 +124,24 @@ namespace lib.View.Level.Nodes
 			var levelNodeChunk = chunkGameObject.AddComponent<LevelNodeChunk>();
 			levelNodeChunk.Initialize();
 
-			var mesh = Shaper.GetMesh(_level.Spline, GetPreviousShaper(offset), offset, length);
+			// load chunk in seperate thread
+			var previousThread = _lastThread; //make a copy so we can change _lastThread without influencing the thread
+			var meshloaderThread = new Thread(
+				() =>
+				{
+					if(previousThread != null) previousThread.Join();
+					levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline.Clone(), GetPreviousShaper(offset), offset, length);
+					levelNodeChunk.NewMeshDataIsReady = true;
+				} 	
+			);
+			meshloaderThread.Start();
+			_lastThread = meshloaderThread;
+			/*
+			levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline.Clone(), GetPreviousShaper(offset), offset, length);
+			levelNodeChunk.NewMeshDataIsReady = true;*/
 			
-			levelNodeChunk.Skin(mesh,_level.StyleData);
+			
+			
 			levelNodeChunk.Length = length;
 			levelNodeChunk.Offset = offset;
 			
@@ -134,6 +150,7 @@ namespace lib.View.Level.Nodes
 			levelNodeChunk.transform.position = Vector3.zero;
 			return levelNodeChunk;
 		}
+
 
 		private IShaper GetPreviousShaper(int offset)
 		{

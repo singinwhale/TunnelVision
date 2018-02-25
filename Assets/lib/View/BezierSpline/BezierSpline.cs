@@ -82,7 +82,8 @@ namespace lib.View.BezierSpline
         /// <param name="from">From</param>
         /// <param name="to">To</param>
         /// <param name="optimistic">Whether the estimate should be optimistic or not.
-        /// Optimistic gives the shortest distance. Pessimistic the longest</param>
+        /// Optimistic distance is guaranteed to be shorter than the actual distance.
+        /// Pessimistic is guaranteed to be longer than the actual distance</param>
         /// <returns></returns>
         [Pure]
         public float EstimateDistanceOnSpline(float from, float to, bool optimistic = false)
@@ -118,6 +119,15 @@ namespace lib.View.BezierSpline
             return estimate;
         }
 
+        public BezierSpline Clone()
+        {
+            var newSpline = new BezierSpline();
+            newSpline._pointsList = _pointsList;
+            newSpline._givenPoints = _givenPoints;
+            newSpline._curve.Points = _curve.Points;
+            return newSpline;
+        }
+        
 		private static List<Vector3> CalculateSharedPoints(List<Vector3> rawPoints)
         {
 			List<Vector3>  curvablePoints = new List<Vector3>();

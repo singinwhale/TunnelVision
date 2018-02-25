@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using lib.View.Level.Nodes;
 using UnityEngine;
 
 namespace lib.View.Shapers
@@ -24,6 +25,6 @@ namespace lib.View.Shapers
 		/// <param name="length">The length of the corresponding chunk</param>
 		void UpdateSplinePoints(IShaper previous, int length);
 
-		Mesh GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length);
+		LevelNodeChunk.MeshData GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length);
 	}
 }

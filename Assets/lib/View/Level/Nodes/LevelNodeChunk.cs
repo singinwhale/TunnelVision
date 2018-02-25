@@ -1,5 +1,7 @@
-﻿using lib.Data.Config;
+﻿using System.Collections.Generic;
+using lib.Data.Config;
 using lib.System;
+using MathNet.Numerics.Optimization;
 using UnityEngine;
 
 namespace lib.View.Level.Nodes
@@ -17,6 +19,12 @@ namespace lib.View.Level.Nodes
         [SerializeField]
         private int _length;
 
+        /// <summary>
+        /// Mesh that should replace the current one.
+        /// </summary>
+        /// <remarks>This variable is set from a different thread!</remarks>
+        public MeshData NewMeshData;
+        public volatile bool NewMeshDataIsReady = false;
 
         public int Length
         {
@@ -54,9 +62,22 @@ namespace lib.View.Level.Nodes
             _meshRenderer.material = m;
         }
 
-        public void Skin(Mesh mesh, LevelStyleData styleData)
+        public void Update()
         {
-            _meshFilter.sharedMesh = mesh;
+            if (NewMeshDataIsReady)
+            {
+                Skin(NewMeshData, World.Instance.Level.StyleData);
+                NewMeshDataIsReady = false;
+            }
+        }
+
+        public void Skin(MeshData meshData, LevelStyleData styleData)
+        {
+            var meshFilterSharedMesh = new Mesh();
+            meshFilterSharedMesh.vertices = meshData.Vertices.ToArray();
+            meshFilterSharedMesh.triangles = meshData.Triangles.ToArray();
+            meshFilterSharedMesh.uv = meshData.UVs.ToArray();
+            _meshFilter.sharedMesh = meshFilterSharedMesh;
         }
         
         /// <summary>
@@ -83,19 +104,16 @@ namespace lib.View.Level.Nodes
                 )
             )
                 return true;
-            if (
-                (
-                    (theCamera.transform.position - spline.Evaluate(Offset)).magnitude <
-                    RenderSettings.fogEndDistance ||
-                    (theCamera.transform.position - spline.Evaluate(Offset+Length)).magnitude <
-                    RenderSettings.fogEndDistance
-                )
-            )
-                return true;
             
             return false;
         }
-        
+
+        public struct MeshData
+        {
+            public List<Vector3> Vertices;
+            public List<int> Triangles;
+            public List<Vector2> UVs;
+        }
 
     }
 }

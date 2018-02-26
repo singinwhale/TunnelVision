@@ -56,7 +56,7 @@ namespace lib.View.Level
         /// </summary>
         public void Tick()
         {
-            var progress = World.Instance.LevelController.Camera.Progress;
+            
         }
 
         public void OnNodeChangedLength(LevelNodeController nodeController)
@@ -96,11 +96,11 @@ namespace lib.View.Level
             }
             Spline.Points = newPoints;
             
-            //invalidate all meshes because previous meshes can be dependant on later shapers
+            //invalidate the node before this one too because he might be affected as well
             iterator = listNode.List.First;
             while (iterator != null)
             {
-                iterator.Value.LevelNode.OnPreviousNodeChangedLength(nodeController);
+                iterator.Value.LevelNode.Invalidate();
                 iterator = iterator.Next;
             }
         }

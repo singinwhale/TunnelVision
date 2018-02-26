@@ -100,6 +100,20 @@ namespace lib.System.Level
 			OnLengthChanged += _levelNode.OnPreviousNodeChangedLength;
 		}
 
+		public LevelNodeController(LevelNodeController previous, Scenario.IScenarioStep step)
+		{
+			Previous = previous;
+			_step = step;
+			_length = step.DefaultLength;
+
+			//instantiate the corresponding LevelNode for the step by calling Level's templated method via reflection
+			Type type = ScenarioStepToLevelNodeTypeDictionary[step.GetType()];
+			Debug.Assert(type.IsSubclassOf(typeof(LevelNode)));
+			// ReSharper disable once PossibleNullReferenceException
+			var genericMethod = typeof(View.Level.Level).GetMethod("CreateLevelNode").MakeGenericMethod(type);
+			_levelNode = (LevelNode)genericMethod.Invoke(World.Instance.Level, new object[]{this});
+			OnLengthChanged += _levelNode.OnPreviousNodeChangedLength;
+		}
 		public void Update()
 		{
 			if (LevelNode.CouldBeVisible())
@@ -113,19 +127,6 @@ namespace lib.System.Level
 			}
 		}
 
-		public LevelNodeController(LevelNodeController previous, Scenario.IScenarioStep step)
-		{
-			Previous = previous;
-			_step = step;
-			_length = step.DefaultLength;
-
-			//instantiate the corresponding LevelNode for the step by calling Level's templated method via reflection
-			Type type = ScenarioStepToLevelNodeTypeDictionary[step.GetType()];
-			Debug.Assert(type.IsSubclassOf(typeof(LevelNode)));
-														// ReSharper disable once PossibleNullReferenceException
-			var genericMethod = typeof(View.Level.Level).GetMethod("CreateLevelNode").MakeGenericMethod(type);
-			_levelNode = (LevelNode)genericMethod.Invoke(World.Instance.Level, new object[]{this});
-		}
 
 		/// <summary>
 		/// Called when this node's logic should take over

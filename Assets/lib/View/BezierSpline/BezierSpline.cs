@@ -122,9 +122,9 @@ namespace lib.View.BezierSpline
         public BezierSpline Clone()
         {
             var newSpline = new BezierSpline();
-            newSpline._pointsList = _pointsList;
-            newSpline._givenPoints = _givenPoints;
-            newSpline._curve.Points = _curve.Points;
+            newSpline._pointsList = new List<Vector3>(_pointsList);
+            newSpline._givenPoints = new List<Vector3>(_givenPoints);
+            newSpline._curve.Points = new List<Vector3>(_curve.Points);
             return newSpline;
         }
         

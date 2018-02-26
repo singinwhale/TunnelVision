@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,6 +7,8 @@ using lib.System;
 using lib.System.Level;
 using lib.View.Shapers;
 using UnityEngine;
+using UnityEngine.Assertions;
+
 namespace lib.View.Level.Nodes
 {
 	/// <summary>
@@ -125,20 +128,33 @@ namespace lib.View.Level.Nodes
 			levelNodeChunk.Initialize();
 
 			// load chunk in seperate thread
-			var previousThread = _lastThread; //make a copy so we can change _lastThread without influencing the thread
+			//make a copies so the thread always has the same values as we have here
+			var previousThread = _lastThread; 
+			var bezierSpline = _level.Spline.Clone();
+			var previousShaper = GetPreviousShaper(offset);
 			var meshloaderThread = new Thread(
 				() =>
 				{
-					if(previousThread != null) previousThread.Join();
-					levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline.Clone(), GetPreviousShaper(offset), offset, length);
+					if (previousThread != null)
+					{
+						//Debug.Log(Thread.CurrentThread.ManagedThreadId+" Waiting for  "+ previousThread.ManagedThreadId);						
+						previousThread.Join();
+						Thread.Sleep(10);
+					}
+					
+					//Debug.Log("Started "+ Thread.CurrentThread.ManagedThreadId);
+					levelNodeChunk.NewMeshData = Shaper.GetMesh(bezierSpline, previousShaper, offset, length);
 					levelNodeChunk.NewMeshDataIsReady = true;
+			
+
+					//Debug.Log("Finished "+Thread.CurrentThread.ManagedThreadId);
 				} 	
 			);
 			meshloaderThread.Start();
 			_lastThread = meshloaderThread;
-			/*
-			levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline.Clone(), GetPreviousShaper(offset), offset, length);
-			levelNodeChunk.NewMeshDataIsReady = true;*/
+			
+			//levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline, GetPreviousShaper(offset), offset, length);
+			//levelNodeChunk.NewMeshDataIsReady = true;
 			
 			
 			

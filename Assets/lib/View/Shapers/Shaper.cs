@@ -10,13 +10,43 @@ namespace lib.View.Shapers
 {
     public abstract class Shaper : IShaper
     {
-        public int Start { get; set; }
-        public int Length { get; set; }
-	    
-	    public List<Vector3> SplinePoints { get; protected set; }
-        public Vector3 LastPoint { get; protected set; }
-        public Vector3 LastDirection { get; protected set; }
-        public Vector3 LastNormal { get; protected set; }
+	    private int _start;
+	    private List<Vector3> _splinePoints;
+	    private Vector3 _lastPoint;
+	    private Vector3 _lastDirection;
+	    private Vector3 _lastNormal;
+
+	    public int Start
+	    {
+		    get { return _start; }
+		    set { _start = value; }
+	    }
+
+	    public int Length { get; set; }
+
+	    public List<Vector3> SplinePoints
+	    {
+		    get { return _splinePoints; }
+		    protected set { _splinePoints = value; }
+	    }
+
+	    public Vector3 LastPoint
+	    {
+		    get { return _lastPoint; }
+		    protected set { _lastPoint = value; }
+	    }
+
+	    public Vector3 LastDirection
+	    {
+		    get { return _lastDirection; }
+		    protected set { _lastDirection = value; }
+	    }
+
+	    public Vector3 LastNormal
+	    {
+		    get { return _lastNormal; }
+		    protected set { _lastNormal = value; }
+	    }
 
 	    protected Shaper(int start, int length)
 	    {

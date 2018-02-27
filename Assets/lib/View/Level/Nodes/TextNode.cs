@@ -22,18 +22,12 @@ namespace lib.View.Level.Nodes
 
 		public override void Tick()
 		{
+			//this is for debugging purposes only
 			if (World.Instance.LevelController.Camera.Progress > Offset + Length-3 && Length < 6)
 			{
 				Controller.Length++;
 			}
 			base.Tick();
-		}
-
-		public override void OnPlayerEnter()
-		{
-			base.OnPlayerEnter();
-			
-			//show text
 		}
 	}
 }

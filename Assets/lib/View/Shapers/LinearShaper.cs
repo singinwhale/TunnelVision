@@ -12,6 +12,7 @@ namespace lib.View.Shapers
         {
         }
 
+        /// <inheritdoc />
         public override void UpdateSplinePoints(IShaper previous, int length)
         {
             LastPoint = previous.LastPoint;

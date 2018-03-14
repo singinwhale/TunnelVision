@@ -16,6 +16,9 @@ namespace lib.View.BezierSpline
         public const int CurveOrder = 4;
 
 
+        /// <summary>
+        /// The points that make up this spline
+        /// </summary>
         public List<Vector3> Points
         {
             get
@@ -31,19 +34,26 @@ namespace lib.View.BezierSpline
         }
 
 
-        public float Length
+        /// <summary>
+        /// The length of this spline. Also the maximum value for the parameter u
+        /// </summary>
+        public int Length
         {
             get
             {
-                return _givenPoints.Count - 1 /*- float.Epsilon*/;
+                return _givenPoints.Count - 1;
             }
         }
 
+        /// <summary>
+        /// The internal points of the curve that are used for calculations.
+        /// </summary>
         public List<Vector3> RawPoints
         {
             get { return _pointsList; }
         }
 
+        /// <summary> Operator wrapping <see cref="Evaluate"/> </summary>
         public Vector3 this[float u]
         {
             get
@@ -52,6 +62,12 @@ namespace lib.View.BezierSpline
             }
         }
 
+        /// <summary>
+        /// Evaluates the spline at a given position 
+        /// </summary>
+        /// <param name="u">The spline parameter. Defined between 0 and <see cref="Length"/></param>
+        /// <returns>position of the point on the curve defined by u 
+        ///</returns>
         public Vector3 Evaluate(float u)
         {
             u = ToInternalU(u);
@@ -60,6 +76,12 @@ namespace lib.View.BezierSpline
             return _curve[GetTForU(u)]; //[0,1] normalized value from u fraction
         }
 
+        /// <summary>
+        /// Gets the nth derivative of the spline
+        /// </summary>
+        /// <param name="u">The spline parameter. Defined between 0 and <see cref="Length"/></param>
+        /// <param name="order">The order of the derivative that should be evaluated</param>
+        /// <returns>The result of the nth derivative at <see cref="u"/></returns>
         public Vector3 GetDerivative(float u, int order)
         {   
             u = ToInternalU(u);
@@ -68,6 +90,11 @@ namespace lib.View.BezierSpline
             return _curve.GetDerivative(GetTForU(u),order); //[0,1] normalized value from u fraction
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="u">The spline parameter. Defined between 0 and <see cref="Length"/></param>
+        /// <returns>The normal of the spline at <see cref="u"/></returns>
 	    public Vector3 GetNormal(float u)
 	    {
 	        u = ToInternalU(u);
@@ -119,6 +146,7 @@ namespace lib.View.BezierSpline
             return estimate;
         }
 
+        /// <returns>A deep copy of this spline</returns>
         public BezierSpline Clone()
         {
             var newSpline = new BezierSpline();
@@ -128,6 +156,11 @@ namespace lib.View.BezierSpline
             return newSpline;
         }
         
+        /// <summary>
+        /// Inserts new points between curves to ensure C1 continuety
+        /// </summary>
+        /// <param name="rawPoints">The points which need intermediates</param>
+        /// <returns>List of points which contain intermeiates</returns>
 		private static List<Vector3> CalculateSharedPoints(List<Vector3> rawPoints)
         {
 			List<Vector3>  curvablePoints = new List<Vector3>();

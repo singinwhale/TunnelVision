@@ -16,6 +16,7 @@ namespace lib.System.Level
 
 		private LinkedList<LevelNodeController> _nodes = new LinkedList<LevelNodeController>();
 
+		/// <summary> The node the player is currently flying through</summary>
 		private LinkedListNode<LevelNodeController> _currentListNode;
 		
 		public View.Level.Level Level { get; private set; }
@@ -43,6 +44,10 @@ namespace lib.System.Level
 		{
 		}
 
+		/// <summary>
+		/// Initializes the level and creates all necessary nodes. No geometry is loaded yet
+		/// </summary>
+		/// <param name="scenario">The scenario that constitutes the level</param>
 		public void Initialize(Scenario scenario)
 		{
 			

@@ -32,6 +32,9 @@ namespace lib.View.Level.Nodes
 		/// </summary>
 		protected List<LevelNodeChunk> _chunks;
 
+		/// <summary>
+		/// Distance which already has been loaded and thus covered with chunks
+		/// </summary>
 		private int _loadedDistance = 0;
 
 		private const int ChunkLength = 1;
@@ -79,8 +82,7 @@ namespace lib.View.Level.Nodes
 
 		public virtual void Tick()
 		{
-			var progress = World.Instance.LevelController.Camera.Progress;
-
+			
 			//generate the geometry
 			if (Length > _loadedDistance && (_chunks.Count == 0 || _chunks.Last().CouldBeVisible()))
 			{
@@ -102,6 +104,9 @@ namespace lib.View.Level.Nodes
 			Invalidate();
 		}
 
+		/// <summary>
+		/// Resets and deletes all loaded visible geometry
+		/// </summary>
 		public void Invalidate()
 		{
 			for (int i = 0; i < _chunks.Count; i++)
@@ -128,6 +133,7 @@ namespace lib.View.Level.Nodes
 			levelNodeChunk.Initialize();
 
 			// load chunk in seperate thread
+			
 			//make a copies so the thread always has the same values as we have here
 			var previousThread = _lastThread; 
 			var bezierSpline = _level.Spline.Clone();
@@ -136,32 +142,25 @@ namespace lib.View.Level.Nodes
 				() =>
 				{
 					if (previousThread != null)
-					{
-						//Debug.Log(Thread.CurrentThread.ManagedThreadId+" Waiting for  "+ previousThread.ManagedThreadId);						
+					{				
 						previousThread.Join();
-						Thread.Sleep(10);
 					}
 					
-					//Debug.Log("Started "+ Thread.CurrentThread.ManagedThreadId);
 					levelNodeChunk.NewMeshData = Shaper.GetMesh(bezierSpline, previousShaper, offset, length);
 					levelNodeChunk.NewMeshDataIsReady = true;
 			
 
-					//Debug.Log("Finished "+Thread.CurrentThread.ManagedThreadId);
 				} 	
 			);
 			meshloaderThread.Start();
 			_lastThread = meshloaderThread;
-			
-			//levelNodeChunk.NewMeshData = Shaper.GetMesh(_level.Spline, GetPreviousShaper(offset), offset, length);
-			//levelNodeChunk.NewMeshDataIsReady = true;
 			
 			
 			
 			levelNodeChunk.Length = length;
 			levelNodeChunk.Offset = offset;
 			
-			//make the gameObject a child of this
+			//make the gameObject a child of this while keeping the position unchanged
 			levelNodeChunk.transform.parent = transform;
 			levelNodeChunk.transform.position = Vector3.zero;
 			return levelNodeChunk;

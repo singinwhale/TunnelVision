@@ -13,6 +13,7 @@ namespace lib.View.Shapers
 		{
 		}
 
+		/// <inheritdoc />
 		public override void UpdateSplinePoints(IShaper previous, int length)
 		{
 			var stepSize = 30;//30 degrees per step

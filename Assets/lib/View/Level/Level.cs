@@ -56,7 +56,6 @@ namespace lib.View.Level
         /// </summary>
         public void Tick()
         {
-            
         }
 
         public void OnNodeChangedLength(LevelNodeController nodeController)
@@ -129,6 +128,7 @@ namespace lib.View.Level
             var levelNodeGameObject = new GameObject("LevelNode "+typeof(TLevelNodeSubclass).Name);
             TLevelNodeSubclass theNode = levelNodeGameObject.AddComponent<TLevelNodeSubclass>();
             theNode.Initialize(this, controller);
+            
             return theNode;
         }
         

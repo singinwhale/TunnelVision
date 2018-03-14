@@ -47,17 +47,18 @@ namespace lib.View.BezierSpline
             Matrix<double> casteljau = GetCasteljauMatrix(pointsList.Count);
             Matrix<double> points = GetPointsMatrix();
 
+            // use calculus derivative rules to generically derive the curve
             //tVector = ((n-o)!*t^(n-o), (n-o-1)!*t^(n-o-2), ... 1);
             Vector<double> tVector = new MathNet.Numerics.LinearAlgebra.Double.DenseVector(pointsList.Count);
             for (int i = 0; i < pointsList.Count; i++)
             {
                 int exponent = pointsList.Count - i - 1;//count down - 1
                 double derivationFactor;
-                if (order == 0) // no derivation
+                if (order == 0) // no derivative
                 {
                     derivationFactor = 1;
                 }
-                else if (exponent <= order - 1) // constants and below are thrown away
+                else if (exponent <= order - 1) // constants and below are thrown away thus set to 0
                 {
                     tVector[i] = 0;
                     continue;
@@ -68,7 +69,7 @@ namespace lib.View.BezierSpline
                 }
                 tVector[i] =  derivationFactor * Mathf.Pow(t, exponent - order);
             }
-
+            //now calculate the actual result
             Vector<double> result = points * casteljau * tVector; 
 
             Vector3 ret;

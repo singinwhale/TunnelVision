@@ -16,32 +16,39 @@ namespace lib.View.Shapers
 	    private Vector3 _lastDirection;
 	    private Vector3 _lastNormal;
 
+
+	    /// <inheritdoc />
 	    public int Start
 	    {
 		    get { return _start; }
 		    set { _start = value; }
 	    }
 
+	    /// <inheritdoc />
 	    public int Length { get; set; }
 
+	    /// <inheritdoc />
 	    public List<Vector3> SplinePoints
 	    {
 		    get { return _splinePoints; }
 		    protected set { _splinePoints = value; }
 	    }
 
+	    /// <inheritdoc />
 	    public Vector3 LastPoint
 	    {
 		    get { return _lastPoint; }
 		    protected set { _lastPoint = value; }
 	    }
 
+	    /// <inheritdoc />
 	    public Vector3 LastDirection
 	    {
 		    get { return _lastDirection; }
 		    protected set { _lastDirection = value; }
 	    }
 
+	    /// <inheritdoc />
 	    public Vector3 LastNormal
 	    {
 		    get { return _lastNormal; }
@@ -54,8 +61,10 @@ namespace lib.View.Shapers
 		    Length = length;
 	    }
         
+	    /// <inheritdoc />
         public abstract void UpdateSplinePoints(IShaper previous, int length);
 
+	    /// <inheritdoc />
 	    public LevelNodeChunk.MeshData GetMesh(BezierSpline.BezierSpline spline, IShaper previous, int offset, int length)
 	    {
 		    Debug.Assert(offset+length <= spline.Length,"Trying to generate mesh that is longer than the spline it is based on! "+(offset+length)+" > "+spline.Length);

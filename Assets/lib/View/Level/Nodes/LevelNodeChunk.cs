@@ -8,7 +8,7 @@ namespace lib.View.Level.Nodes
 {
     /// <summary>
     /// Manages the Geometry of a part of a levelNode.
-    /// The Geometry is not genereated here. it is only the one displaying it
+    /// The Geometry is not genereated here. it is only the one displaying and storing it
     /// </summary>
     public class LevelNodeChunk : MonoBehaviour
     {

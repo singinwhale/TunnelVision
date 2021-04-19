@@ -138,6 +138,13 @@ namespace lib.View.Level.Nodes
 			var previousThread = _lastThread; 
 			var bezierSpline = _level.Spline.Clone();
 			var previousShaper = GetPreviousShaper(offset);
+			
+			#if UNITY_WEBGL
+			
+			levelNodeChunk.NewMeshData = Shaper.GetMesh(bezierSpline, previousShaper, offset, length);
+			levelNodeChunk.NewMeshDataIsReady = true;
+			
+			#else
 			var meshloaderThread = new Thread(
 				() =>
 				{
@@ -154,15 +161,16 @@ namespace lib.View.Level.Nodes
 			);
 			meshloaderThread.Start();
 			_lastThread = meshloaderThread;
-			
-			
-			
+			#endif
+
+
 			levelNodeChunk.Length = length;
 			levelNodeChunk.Offset = offset;
 			
 			//make the gameObject a child of this while keeping the position unchanged
-			levelNodeChunk.transform.parent = transform;
-			levelNodeChunk.transform.position = Vector3.zero;
+			Transform chunkTransform = levelNodeChunk.transform;
+			chunkTransform.parent = transform;
+			chunkTransform.position = Vector3.zero;
 			return levelNodeChunk;
 		}
 
